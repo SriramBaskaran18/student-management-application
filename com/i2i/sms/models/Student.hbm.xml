@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.i2i.sms.models">
+    <class name = "Student" table = "student">
+        <id name = "id" column = "student_id" type = "int">
+            <generator class = "increment"/>
+        </id>
+        <property name = "name" column = "student_name" not-null = "true"/>
+        <property name = "dob" column = "student_dob" not-null = "true"/>
+        <one-to-one name = "address" class = "com.i2i.sms.models.Address" cascade = "all"/>
+        <many-to-one name = "grade" class = "com.i2i.sms.models.Grade" column = "grade_id" not-null = "true" cascade = "persist" lazy = "false"/>
+        <set name = "roles" table = "student_role" cascade = "save-update" fetch = "join">
+            <key column = "student_id" not-null = "true" />
+            <many-to-many column = "role_id" class = "com.i2i.sms.models.Role" />
+        </set>
+    </class>
+</hibernate-mapping>

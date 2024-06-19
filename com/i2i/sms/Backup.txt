@@ -1,0 +1,350 @@
+StudentDao
+
+package com.i2i.sms.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.helper.HibernateManagement;
+import com.i2i.sms.models.Student;
+
+public class StudentDao {
+   
+    /**
+     * Inserts student data into the database.
+     * @param student The Student object containing student information to be inserted. 
+     * @return The inserted student record or null if any exception occurs. 
+     * @throws StudentManagementException if a database access error occurs while inserting. 
+     */
+    public void addStudent(Student student) throws StudentManagementException {
+        Session session = null;
+        Transaction transaction = null;
+        try () {
+            session = HibernateManagement.getSessionFactory().openSession();
+            session.beginTransaction();
+            session.save(student);
+            transaction.commit();
+            return student;
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while inserting student: " + student, e);
+        }
+    }
+
+    /**
+     * Fetches all student data from the database.
+     * @return A list of Student objects containing the fetched data, or null if no data is retrieved.
+     * @throws StudentManagementException if a database access error occurs while fetching all students.
+     */
+    public List<Student> fetchAllStudents() throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Student", Student.class).list();
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while fetching student data.");
+        }
+    }
+
+    /**
+     * Searches for a student in the database by their Id.
+     * @param studentId ID of the student to search for.
+     * @return The Student object corresponding to the given Id, or null if not found.
+     * @throws StudentManagementException if a database access error occurs while searching.
+     */
+    public Student getStudentById(int studentId) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            return session.get(Student.class, studentId);
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while searching for student: " + studentId, e);
+        }
+    }
+
+    /**
+     * Deletes a student record from the database based on the provided student Id.
+     * @param studentId The Id of the student record to be deleted.
+     * @throws StudentManagementException if a database access error occurs while deleting a record.
+     */
+    public void deleteStudentById(int studentId) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            Student student = session.get(Student.class, studentId);
+            if (student != null) {
+                session.delete(student);
+            } else {
+                throw new StudentManagementException("Student with ID " + studentId + " not found.");
+            }
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while deleting the student: " + studentId, e);
+        }
+    }
+
+    /**
+     * Fetches a list of Student objects along with their corresponding Grade objects, address objects and roles from the database.
+     * @return A list of Student objects with associated Grade objects, address objects and roles or null if an error occurs.
+     * @throws StudentManagementException if a database access error occurs while retrieve all students from the table.
+     */
+    public List<Student> getAllStudents() throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            Query<Student> query = session.createQuery(
+                "SELECT s FROM Student s " +
+                "JOIN FETCH s.grade " +
+                "LEFT JOIN FETCH s.address " +
+                "LEFT JOIN FETCH s.roles", Student.class);
+            return query.list();
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while fetching all students.", e);
+        }
+    }
+}
+
+
+
+GradeDao----->
+
+package com.i2i.sms.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.helper.HibernateManagement;
+import com.i2i.sms.models.Grade;
+import com.i2i.sms.models.Student;
+
+public class GradeDao {
+ 
+    /**
+     * Checks if a grade exists for a given standard and section.
+     * @param std The standard within the grade to search for.
+     * @param section The section within the grade to search for.
+     * @return Id of the grade if the grade found (or) 0 if no grade found or if an exception occurs.
+     * @throws StudentManagementException if a database access error occurs while check the grade exists or not.
+     */
+    public int getIdIfGradeExists(int std, String section) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            Query<Integer> query = session.createQuery(
+                "SELECT g.id FROM Grade g WHERE g.standard = :std AND g.section = :section", Integer.class);
+            query.setParameter("std", std);
+            query.setParameter("section", section);
+            List<Integer> results = query.list();
+            if (!results.isEmpty()) {
+                return results.get(0);
+            }
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while checking if the grade exists.");
+        }
+        return 0;
+    }
+
+    /**
+     * Adds a grade data into the database.
+     * @param grade The Grade object containing grade information to be inserted.
+     * @return The ID of the inserted grade record or 0 if any exception occurs.
+     * @throws StudentManagementException if an error occurs during grade addition.
+     */
+    public int addGrade(Grade grade) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            int generatedId = (int) session.save(grade);
+            session.getTransaction().commit();
+            return generatedId;
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while inserting Grade into the database.");
+        }
+    }
+
+    /**
+     * Fetches all grades from the database.
+     * @return List of Grade records containing data from the database.
+     * @throws StudentManagementException if there's an issue accessing or fetching data from the database.
+     */
+    public List<Grade> getAllGrades() throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Grade", Grade.class).list();
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while fetching grade data.");
+        }
+    }
+
+    /**
+     * Fetch data from the "grade" and also fetch the corresponding students of that grade.
+     * from the student table by using grade Id.
+     * @param gradeId Id of the Grade to search for.  
+     * @return Grade containing data from the database or null.
+     * @throws StudentManagementException if there's an issue accessing or fetching data from the database by using its Id.
+     */
+    public Grade getGradeById(int gradeId) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            return session.get(Grade.class, gradeId);
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while getting grade by its id: " + gradeId);
+        }
+    }
+}
+
+
+Address -->
+
+package com.i2i.sms.dao;
+
+import org.hibernate.Session;
+import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.helper.HibernateManagement;
+import com.i2i.sms.models.Address;
+import com.i2i.sms.models.Student;
+
+public class AddressDao {
+
+    /**
+     * Add address into the database.
+     * @param address An address object containing address information to be inserted.
+     * @param studentId The ID of the student associated with the address.
+     * @throws StudentManagementException if a database access error occurs while adding the address.
+     */
+    public void addAddress(Address address, int studentId) throws StudentManagementException {
+        try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            Student student = new Student();
+            student.setId(studentId);
+            address.setStudent(student); // Set the student ID
+            session.save(address); // Save the address object
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            throw new StudentManagementException("An unexpected error occurred while inserting address: " + address, e);
+        }
+    }
+}
+
+
+Role -->
+
+package com.i2i.sms.dao;
+import java.util.ArrayList;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.hibernate.SessionFactory;
+
+import com.i2i.sms.helper.HibernateManagement;
+import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.models.Student;
+import com.i2i.sms.models.Role;
+import com.i2i.sms.models.Grade;
+
+public class RoleDao {
+
+    private SessionFactory sessionFactory = HibernateManagement.getSessionFactory();
+
+    /**
+     * Checks if a role exists for a given role.
+     *
+     * @param role role to search for.
+     * @return Id of the role if the role found (or) 0 if no role found or if an exception occurs.
+     * @throws StudentManagementException if a database access error occurs while checking the role exists or not.
+     */
+    public int getIdIfRoleExists(String role) throws StudentManagementException {
+        int roleId = 0;
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Query<Role> query = session.createQuery("FROM Role WHERE student_role = :role", Role.class);
+            query.setParameter("role", role);
+            Role roleResult = query.uniqueResult();
+            if (roleResult != null) {
+                roleId = roleResult.getId();
+            }
+            transaction.commit();
+            return roleId;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new StudentManagementException("An unexpected error occurred while checking if role :" + role + " exists or not", e);
+        }
+    }
+
+    /**
+     * Add Student Role into the database.
+     *
+     * @param role The role to be added to the table.
+     * @return The ID of the added role record or 0 if any exception occurs.
+     * @throws StudentManagementException if a database access error occurs while adding the role.
+     */
+    public int addRole(String role) throws StudentManagementException {
+        int roleId = 0;
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Role newRole = new Role();
+            newRole.setName(role);
+            roleId = (int) session.save(newRole);
+            transaction.commit();
+            return roleId;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new StudentManagementException("An unexpected error occurred while adding role :" + role + " to the table", e);
+        }
+    }
+
+    /**
+     * Fetch role from the "role" and also fetch the corresponding students of that role from the student table by using role Id.
+     *
+     * @param roleId Id of the role to search for.
+     * @return Role containing data from the database or null.
+     * @throws StudentManagementException if a database access error occurs while retrieving the role by its id.
+     */
+    public Role getRoleById(int roleId) throws StudentManagementException {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Role role = session.get(Role.class, roleId);
+            if (role != null) {
+                // Initialize the students collection to avoid LazyInitializationException
+                role.getStudents().size();
+            }
+            transaction.commit();
+            return role;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new StudentManagementException("An unexpected error occurred while retrieving role by its id :" + roleId, e);
+        }
+    }
+
+    /**
+     * Add studentId and roleId into the Student Role table in the database.
+     *
+     * @param studentId The studentId to be added to the table.
+     * @param roleId The roleId to be added to the table.
+     * @throws StudentManagementException if a database access error occurs while adding the studentId and roleId.
+     */
+    public void assignRoleToStudent(int studentId, int roleId) throws StudentManagementException {
+        List<Role> roles = new ArrayList<Role>();
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Role role = session.get(Role.class, roleId);
+            Student student = session.get(Student.class, studentId);
+            if (role != null && student != null) {
+                role.getStudents().add(student);
+                roles.add(role);
+                student.setRoles(roles);
+                session.update(role);
+                session.update(student);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new StudentManagementException("An unexpected error occurred while adding studentId :" + studentId + " and roleId :" + roleId + " to the table", e);
+        }
+    }
+}
+
