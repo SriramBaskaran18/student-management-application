@@ -1,0 +1,19 @@
+# Feature of Student-Management-System :
+1. This application is used to manage the school application process from student registration.
+2. It covers four entities like student, grade, address, and role.
+3. In the student entity, it covers student details, including the address which the student 
+   belongs, the grade to which the student belongs, and the role that is selected by the student.  
+4. The grade entity covers grade information and the students that are related to it. 
+5. The Address entity includes the student's city, mobile number, and state of residence.
+6. The Role object consists of three fixed roles. It lists the students assigned to each role,
+   and the roles assigned to students are those that they select during the registration process.
+
+## To Run the Application :
+Install Maven and set Classpath for System Variable.
+
+### To check maven installation success :
+open cmd --> mvn -v --> which shows the version of maven installed
+
+### Launch Command Prompt and execute these commands:
+1. mvn clean install
+2. mvn exec:java -Dexec.mainClass="Main" //TO RUN

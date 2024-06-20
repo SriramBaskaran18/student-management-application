@@ -3,12 +3,16 @@
     <session-factory>
         <property name = "hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name = "hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name = "hibernate.connection.url">jdbc:postgresql://localhost:5432/MavenStudentBase</property>
+        <property name = "hibernate.connection.url">jdbc:postgresql://localhost:5432/StudentBase</property>
         <property name = "hibernate.connection.username">postgres</property>
         <property name = "hibernate.connection.password">Elephant</property>
         <property name = "hibernate.hbm2ddl.auto">update</property>
         <property name = "hibernate.show_sql">true</property>
         <property name = "hibernate.format_sql">true</property>
-        <mapping resource = "Student.hbm.xml"/>
+
+        <mapping resource="Student.hbm.xml"/>
+        <mapping resource="Address.hbm.xml"/>
+        <mapping resource="Grade.hbm.xml"/>
+        <mapping resource="Role.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

@@ -1,24 +1,16 @@
 package com.i2i.sms.model;
 
-/**
- * <p>
- * This class represents a student entity with attributes
- * such as id, name, date of birth (dob) and city.
- * </p>
- */
+import java.util.Set;
+
+import com.i2i.sms.utils.DateUtils;
+
 public class Student {
-    private int id;
-    private String name;
-    private String dob;
-    private String city;
-
-    public Student() {}
-
-    public Student(String name, String dob, String city) {
-        this.name = name;
-        this.dob = dob;
-        this.city = city;
-    }
+    private int id;    
+    private String name;    
+    private String dob;    
+    private Grade grade;
+    private Address address;
+    private Set<Role> roles;
 
     public int getId() {
         return id;
@@ -41,19 +33,33 @@ public class Student {
         this.dob = dob;
     }
 
-    public String getCity() {
-        return city;
+    public Grade getGrade() {
+        return grade;
     }
-    public void setCity(String city) {
-        this.city = city;
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
+ 
+    public Address getAddress() {
+        return address;
+    }
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Student Id :").append(id)
-                     .append(", Student Name :").append(name)
-                     .append(", Student Dob :").append(dob)
-                     .append(", Students City :").append(city);
+        stringBuilder.append("\nStudentId : ").append(id)
+            .append(", Student Name : ").append(name)
+            .append(", Student D.O.B : ").append(dob)
+            .append(", Student Age : ").append(DateUtils.calculateDateDifference(dob));
         return stringBuilder.toString();
     }
 }
