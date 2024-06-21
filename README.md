@@ -23,4 +23,5 @@
 ## Launch Command Prompt and execute these commands:
 
 - mvn clean install
+- mvn compile
 - mvn exec:java -Dexec.mainClass="Main" 
