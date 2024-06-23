@@ -32,7 +32,6 @@ public class GradeDao {
             query.setParameter("section", section);
             return query.uniqueResult();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new StudentManagementException("error occured while checking grade exists or not with standard :"+standard +" and section :"+section, e);
         }
     }
@@ -55,13 +54,12 @@ public class GradeDao {
             transaction = session.beginTransaction();
             session.save(grade);
             transaction.commit();
+            return grade;
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error occured while inserting grade", e);
+            throw new StudentManagementException("Error occurred while inserting grade", e);
         }
-        return grade;
-    } 
-     
+    }
     /**
      * <p>
      * Retrieves a Grade object from the database based on the provided grade ID.
@@ -111,14 +109,14 @@ public class GradeDao {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             Grade grade = session.get(Grade.class, gradeId);
-            if (null != grade) {
+            if (grade != null) {
                 session.delete(grade);
                 transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error Occured while deleting grade by its id :"+ gradeId, e);
+            throw new StudentManagementException("Error occurred while deleting grade by its id :" + gradeId, e);
         }
         return false;
     }

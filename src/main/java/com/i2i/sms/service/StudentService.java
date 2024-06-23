@@ -49,6 +49,7 @@ public class StudentService {
         student.setName(name);
         student.setDob(dob);
         student.setAddress(address);
+        address.setStudent(student);
         student.setGrade(grade);
         student.setRoles(roles);
         return studentDao.addStudent(student);        

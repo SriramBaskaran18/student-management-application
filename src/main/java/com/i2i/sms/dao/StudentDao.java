@@ -1,6 +1,5 @@
 package com.i2i.sms.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -9,6 +8,7 @@ import org.hibernate.Transaction;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
+import com.i2i.sms.model.Address;
 import com.i2i.sms.model.Student;
 
 public class StudentDao {
@@ -47,12 +47,14 @@ public class StudentDao {
      *         if an error occurs while fetching the student.
      */
     public Student getStudentById(int studentId) throws StudentManagementException {
-        Student student = null; 
+        Student student = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             student = session.get(Student.class, studentId);
-            Hibernate.initialize(student.getGrade());
-            Hibernate.initialize(student.getAddress());
-            Hibernate.initialize(student.getRoles());
+            if (student != null) {
+                Hibernate.initialize(student.getGrade());
+                Hibernate.initialize(student.getAddress());
+                Hibernate.initialize(student.getRoles());
+            }
         } catch (Exception e) {
             throw new StudentManagementException("Error fetching student with ID: " + studentId, e);
         }
@@ -85,19 +87,29 @@ public class StudentDao {
      * @throws StudentManagementException 
      *         if an error occurs while deleting the student.
      */
-    public boolean deleteStudentById(int studentId) throws StudentManagementException{
+    public boolean deleteStudentById(int studentId) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             Student student = session.get(Student.class, studentId);
-            if (null != student) {
+            if (student != null) {
+                student.getGrade().getStudents().remove(student);
+                student.getRoles().forEach(role -> role.getStudents().remove(student));
+                student.setRoles(null);
+                Address address = session.createQuery("from Address where student.id = :studentId", Address.class)
+                        .setParameter("studentId", studentId)
+                        .uniqueResult();
+                if (address != null) {
+                    address.setStudent(null);
+                    session.update(address);
+                }
                 session.delete(student);
                 transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error occured while deleting student by its id :"+ studentId, e);
+            throw new StudentManagementException("Error occured while deleting student by its id :" + studentId, e);
         }
         return false;
     }
