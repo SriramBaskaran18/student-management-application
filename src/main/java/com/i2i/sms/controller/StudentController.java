@@ -11,7 +11,7 @@ import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Address;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.model.Student;
-import com.i2i.sms.service.RoleService; 
+import com.i2i.sms.service.RoleService;
 import com.i2i.sms.service.StudentService;
 import com.i2i.sms.utils.DateUtils;
 import com.i2i.sms.utils.StringValidationUtil;
@@ -26,7 +26,7 @@ public class StudentController {
     public static Scanner scanner = new Scanner(System.in);
     public StudentService studentService = new StudentService();
     public RoleService roleService = new RoleService();
- 
+
     /**
      * <p>
      * Gather information from the user and validate like Name contains only Alphabets,
@@ -76,30 +76,27 @@ public class StudentController {
             System.out.println("Enter Your City :");
             String city = scanner.nextLine();
             System.out.println("Enter Your State :");
-            String state = scanner.nextLine(); 
-            System.out.println("Enter Yout Zipcode :");
+            String state = scanner.nextLine();
+            System.out.println("Enter Your Zipcode :");
             int zipcode = scanner.nextInt();
             scanner.nextLine();
             System.out.println("Enter Your Mobile Number :");
             String mobileNumber = scanner.nextLine();
-            Address address = new Address();
-            address.setDoorNumber(doorNumber);
-            address.setStreet(street);
-            address.setCity(city);
-            address.setState(state);
-            address.setZipcode(zipcode);
-            address.setMobileNumber(mobileNumber);
-            Set<Role> roles = new HashSet<Role>();
-            roles = addRole();
+            Address address = new Address(doorNumber, street, city, state, zipcode, mobileNumber);
+            Set<Role> roles = addRole();
             Student insertedStudent = studentService.addStudent(name, dob, std, section, address, roles);
-            displayStudent(insertedStudent);
-            System.out.println(insertedStudent.getGrade());
-            System.out.println("**Student Data Added to the Database**");
+            if (insertedStudent != null) {
+                displayStudent(insertedStudent);
+                System.out.println(insertedStudent.getGrade());
+                System.out.println("**Student Data Added to the Database**");
+            } else {
+                System.out.println("Unable to add Student");
+            }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-    } 
+    }
 
     /**
      * <p>
@@ -107,17 +104,18 @@ public class StudentController {
      * The student can select multiple roles and the method ensures that each role is picked only once.
      * The method continues to prompt for role selection until the user chooses to exit.
      * </p>
+     *
      * @return a set of roles selected by the user.
      */
     public Set<Role> addRole() {
-        List<Integer> picks = new ArrayList<Integer>();
-        Set<Role> pickedRoles = new HashSet<Role>();
+        List<Integer> picks = new ArrayList<>();
+        Set<Role> pickedRoles = new HashSet<>();
         try {
             while (true) {
                 System.out.println("Choose The Role You Want");
                 System.out.println("Pick 1 For Class Representative");
-                System.out.println("Pick 2 For Board Incharge");
-                System.out.println("Pick 3 For Cabinet Incharge");
+                System.out.println("Pick 2 For Board In-charge");
+                System.out.println("Pick 3 For Cabinet In-charge");
                 int pick = scanner.nextInt();
                 if (!picks.contains(pick)) {
                     switch (pick) {
@@ -134,17 +132,16 @@ public class StudentController {
                             System.out.println("\n____Invalid Pick____");
                     }
                     picks.add(pick);
-                }
-                else {
+                } else {
                     System.out.println("You Already Picked That Role");
                 }
                 System.out.println("1--> Continue with another role \n press any number and Enter--> Exit....");
                 int option = scanner.nextInt();
                 if (option == 1) {
                     continue;
-                } 
+                }
                 break;
-            } 
+            }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -169,38 +166,23 @@ public class StudentController {
     }
 
     /**
+     * <p>
      * Retrieves the corresponding student details and displays the student information to the user.
+     * </p>
      */
     public void getStudentById() {
         try {
             System.out.println("Enter StudentId to Search Specific Student : ");
             int searchId = scanner.nextInt();
             Student student = studentService.getStudentById(searchId);
-            displayStudent(student);
-            System.out.println(student.getGrade()+ "\n");
-            System.out.println(student.getAddress()+ "\n");
-        } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-        }
-    } 
-
-    /**
-     * <p>
-     * Prompts User to enter the id of the student to be removed, 
-     * it will display a success message if the specified student removed or 
-     * else it will display a warning message with the corresponding student id.
-     * </p> 
-     */
-    public void deleteStudentById() {
-        try {
-            System.out.println("Enter Student ID to Delete Specific Student :");
-            int studentId = scanner.nextInt();
-            boolean isStudentDelete = studentService.deleteStudentById(studentId);
-            if (isStudentDelete) {
-                System.out.println("**Student Deleted successfully**");
+            if (student != null) {
+                displayStudent(student);
+                System.out.println(student.getGrade() + "\n");
+                System.out.println(student.getAddress() + "\n");
             } else {
-                System.out.println("**Student Id:"+ studentId +" not found to delete**");
+                System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
+                System.out.println("\n**No Student Exists**");
+                System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
@@ -210,10 +192,33 @@ public class StudentController {
 
     /**
      * <p>
-     * Display the student data. 
+     * Prompts User to enter the id of the student to be removed,
+     * it will display a success message if the specified student removed or
+     * else it will display a warning message with the corresponding student id.
      * </p>
-     * @param student 
-     *           Student will have Name, D.O.B in the yyyy-MM-dd format, Age, and Grade.
+     */
+    public void deleteStudentById() {
+        try {
+            System.out.println("Enter Student ID to Delete Specific Student :");
+            int studentId = scanner.nextInt();
+            boolean isStudentDelete = studentService.deleteStudentById(studentId);
+            if (isStudentDelete) {
+                System.out.println("**Student Deleted successfully**");
+            } else {
+                System.out.println("**Student Id:" + studentId + " not found to delete**");
+            }
+        } catch (StudentManagementException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * <p>
+     * Display the student data.
+     * </p>
+     *
+     * @param student Student will have Name, D.O.B in the yyyy-MM-dd format, Age, and Grade.
      */
     public void displayStudent(Student student) {
         System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");

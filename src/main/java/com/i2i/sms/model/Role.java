@@ -38,8 +38,6 @@ public class Role {
     )
     private Set<Student> students;
 
-    // getters and setters
-
     public int getId() {
         return id;
     }

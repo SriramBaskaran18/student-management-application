@@ -1,9 +1,7 @@
 import java.util.Scanner;
 
-import com.i2i.sms.controller.AddressController;
-import com.i2i.sms.controller.GradeController;
-import com.i2i.sms.controller.RoleController;
-import com.i2i.sms.controller.StudentController;
+import com.i2i.sms.controller.*;
+import io.github.cdimascio.dotenv.Dotenv;
 
 
 /**
@@ -15,26 +13,20 @@ import com.i2i.sms.controller.StudentController;
  */
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
-    private StudentController studentController = new StudentController();
-    private GradeController gradeController = new GradeController();
-    private AddressController addressController = new AddressController();
-    private RoleController roleController = new RoleController();
-
-    public static void main(String args[]) {
-        Main main = new Main();
-        main.StartApplication(); 
-    }
-
-//TO-DO - COMMENT
+    private static AddressController addressController = new AddressController();
+    private static AdminController adminController = new AdminController();
+    private static GradeController gradeController = new GradeController();
+    private static RoleController roleController = new RoleController();
+    private static StudentController studentController = new StudentController();
 
     /**
      * <p>
      * This class is an interface to interact with the user,
-     * allowing them to choose different options like creating or 
+     * allowing them to choose different options like creating or
      * searching, deleting, or exiting the application.
      * </p>
      */
-    public void StartApplication() {
+    public static void main(String args[]) {
         boolean isAccess = true;
         while (isAccess) {
             System.out.println("Enter your choice :");
@@ -42,7 +34,8 @@ public class Main {
             System.out.println("Enter 2 to Get All Data");
             System.out.println("Enter 3 to Search");
             System.out.println("Enter 4 to Delete");
-            System.out.println("Enter 5 to Exit -->");
+            System.out.println("Enter 5 to Edit Admin Data");
+            System.out.println("Enter 6 to Exit -->");
             int choice = scanner.nextInt();
             int pick;
             switch (choice) {
@@ -50,18 +43,22 @@ public class Main {
                     studentController.createStudent();
                     break;
                 case 2:
-                    System.out.println("Enter 1 to Get All Grades...");
-                    System.out.println("Enter 2 to Get All Students...");
-                    pick = scanner.nextInt();
-                    switch(pick) {
-                        case 1:
-                            gradeController.getAllGrades();
-                            break;
-                        case 2:
-                            studentController.getAllStudents();
-                            break;
-                        default:
-                            System.out.println("\n____Invalid Pick____");
+                    if (checkAdminPass()) {
+                        System.out.println("Enter 1 to Get All Grades...");
+                        System.out.println("Enter 2 to Get All Students...");
+                        pick = scanner.nextInt();
+                        switch (pick) {
+                            case 1:
+                                gradeController.getAllGrades();
+                                break;
+                            case 2:
+                                studentController.getAllStudents();
+                                break;
+                            default:
+                                System.out.println("\n____Invalid Pick____");
+                        }
+                    } else {
+                        System.out.println("____Invalid AdminPass____");
                     }
                     break;
                 case 3:
@@ -103,12 +100,44 @@ public class Main {
                     }
                     break;
                 case 5:
+                    if (checkAdminPass()) {
+                        System.out.println("Enter 1 to Add Admin");
+                        System.out.println("Enter 2 to Delete Admin");
+                        System.out.println("Enter 3 to Get All Admins");
+                        pick = scanner.nextInt();
+                        switch (pick) {
+                            case 1:
+                                adminController.addAdmin();
+                                break;
+                            case 2:
+                                adminController.deleteAdminById();
+                                break;
+                            case 3:
+                                adminController.getAllAdmins();
+                                break;
+                            default:
+                                System.out.println("____Invalid Pick____");
+                        }
+                        break;
+                    } else {
+                        System.out.println("____Invalid UserName or Password____");
+                    }
+                case 6:
                     System.out.println("Exiting---->");
                     isAccess = false;
                     break;
                 default:
                     System.out.println("\n_____Invalid Choice_____");
             }
-        } 
+        }
+    }
+
+    public static boolean checkAdminPass() {
+        Dotenv dotenv = Dotenv.load();
+        System.out.println("Enter Admin Name :");
+        String userName = scanner.next();
+        System.out.println("Enter Admin password :");
+        String password = scanner.next();
+        return userName.equals(dotenv.get("ADMIN_USER_NAME")) && password.equals(dotenv.get("ADMIN_PASSWORD"));
     }
 }

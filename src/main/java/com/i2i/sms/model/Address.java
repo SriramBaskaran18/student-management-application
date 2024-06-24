@@ -47,6 +47,19 @@ public class Address {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    public Address() {
+    }
+
+    public Address(String doorNumber, String street, String city,
+                   String state, int zipcode, String mobileNumber) {
+        this.doorNumber = doorNumber;
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
+        this.mobileNumber = mobileNumber;
+    }
+
     public int getId() {
         return id;
     }

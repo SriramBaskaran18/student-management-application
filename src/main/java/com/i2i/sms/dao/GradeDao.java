@@ -32,7 +32,7 @@ public class GradeDao {
             query.setParameter("section", section);
             return query.uniqueResult();
         } catch (Exception e) {
-            throw new StudentManagementException("error occured while checking grade exists or not with standard :"+standard +" and section :"+section, e);
+            throw new StudentManagementException("error occurred while checking grade exists or not with standard :"+standard +" and section :"+section, e);
         }
     }
 
@@ -74,7 +74,7 @@ public class GradeDao {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             return session.get(Grade.class, gradeId);
         } catch (Exception e) {
-            throw new StudentManagementException("Error occured while fetching grade with id :"+ gradeId, e);
+            throw new StudentManagementException("Error occurred while fetching grade with id :"+ gradeId, e);
         }
     }
         
@@ -90,7 +90,7 @@ public class GradeDao {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             return session.createQuery("FROM Grade", Grade.class).list();
         } catch (Exception e) {
-            throw new StudentManagementException("Error Occured While Fetching All Grades", e);
+            throw new StudentManagementException("Error Occurred While Fetching All Grades", e);
         }
     }
    

@@ -8,7 +8,7 @@ import com.i2i.sms.service.RoleService;
 
 public class RoleController {
     public static Scanner scanner = new Scanner(System.in);
-    public RoleService roleService = new RoleService(); 
+    public RoleService roleService = new RoleService();
 
     /**
      * <p>
@@ -20,8 +20,12 @@ public class RoleController {
             System.out.println("Enter Role Id to Search Role with Associated Students :");
             int roleId = scanner.nextInt();
             Role role = roleService.getRoleById(roleId);
-            System.out.println(role);
-            System.out.println(role.getStudents());
+            if (null != role) {
+                System.out.println(role);
+                System.out.println(role.getStudents());
+            } else {
+                System.out.println("No Role Exists");
+            }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

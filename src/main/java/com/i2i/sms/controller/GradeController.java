@@ -63,7 +63,7 @@ public class GradeController {
      * <p>
      * Display the grade data.   
      * </p>
-     * @param Grade 
+     * @param grade
      *           Grade will have Standard, Section and gradeId.
      */
     public void displayGrade(Grade grade) {

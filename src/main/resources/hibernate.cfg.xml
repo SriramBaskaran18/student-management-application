@@ -12,5 +12,6 @@
         <mapping class="com.i2i.sms.model.Address"/>
         <mapping class="com.i2i.sms.model.Grade"/>
         <mapping class="com.i2i.sms.model.Role"/>
+        <mapping class="com.i2i.sms.model.Admin"/>
     </session-factory>
 </hibernate-configuration>

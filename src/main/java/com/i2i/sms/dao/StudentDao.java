@@ -8,7 +8,6 @@ import org.hibernate.Transaction;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
-import com.i2i.sms.model.Address;
 import com.i2i.sms.model.Student;
 
 public class StudentDao {
@@ -47,18 +46,17 @@ public class StudentDao {
      *         if an error occurs while fetching the student.
      */
     public Student getStudentById(int studentId) throws StudentManagementException {
-        Student student = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
-            student = session.get(Student.class, studentId);
+            Student student = session.get(Student.class, studentId);
             if (student != null) {
                 Hibernate.initialize(student.getGrade());
                 Hibernate.initialize(student.getAddress());
                 Hibernate.initialize(student.getRoles());
             }
+            return student;
         } catch (Exception e) {
             throw new StudentManagementException("Error fetching student with ID: " + studentId, e);
         }
-        return student;
     }
 
     /**
@@ -73,7 +71,7 @@ public class StudentDao {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             return session.createQuery("from Student", Student.class).list();
         } catch (Exception e) {
-            throw new StudentManagementException("Error occured while fetching all students", e);
+            throw new StudentManagementException("Error occurred while fetching all students", e);
         }
     } 
 
@@ -96,20 +94,13 @@ public class StudentDao {
                 student.getGrade().getStudents().remove(student);
                 student.getRoles().forEach(role -> role.getStudents().remove(student));
                 student.setRoles(null);
-                Address address = session.createQuery("from Address where student.id = :studentId", Address.class)
-                        .setParameter("studentId", studentId)
-                        .uniqueResult();
-                if (address != null) {
-                    address.setStudent(null);
-                    session.update(address);
-                }
                 session.delete(student);
                 transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error occured while deleting student by its id :" + studentId, e);
+            throw new StudentManagementException("Error occurred while deleting student by its id :" + studentId, e);
         }
         return false;
     }

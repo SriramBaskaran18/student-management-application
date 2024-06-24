@@ -34,7 +34,13 @@ public class Grade {
     @OneToMany(mappedBy = "grade", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Student> students;
 
-    // getters and setters
+    public Grade() {
+    }
+
+    public Grade(int std, String section) {
+        this.std = std;
+        this.section = section;
+    }
 
     public int getId() {
         return id;

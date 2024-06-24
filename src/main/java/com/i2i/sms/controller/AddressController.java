@@ -20,7 +20,12 @@ public class AddressController {
             System.out.println("Enter AddressId to Search Specific Address : ");
             int addressId = scanner.nextInt();
             Address address = addressService.getAddressById(addressId);
-            System.out.println("" + address + "\n" +"Student Id : "+ address.getStudent().getId() + " Student Name:" + address.getStudent().getName());
+            if(null != address) {
+                System.out.println(address + "\n" + "Student Id : " + address.getStudent().getId() +
+                        " Student Name:" + address.getStudent().getName());
+            }else{
+                System.out.println("Address not Exists");
+            }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

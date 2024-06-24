@@ -20,16 +20,15 @@ public class RoleDao {
      *         The name of the role to search for in the database.
      * @return A Role object if the role exists, or null if it does not.
      * @throws StudentManagementException
-     *         If an error occurs while retreiving role from the database.
+     *         If an error occurs while retrieving role from the database.
      */
     public Role getRoleIfRoleExists(String roleName) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             Query<Role> query = session.createQuery("FROM Role WHERE name = :roleName", Role.class);
             query.setParameter("roleName", roleName);
-            Role role = query.uniqueResult();
-            return role;
+            return query.uniqueResult();
         } catch (Exception e) {
-            throw new StudentManagementException("Error Ocurred While checking if Role exists or not with role name :" + roleName, e);
+            throw new StudentManagementException("Error Occurred While checking if Role exists or not with role name :" + roleName, e);
         }
     }
 
@@ -62,21 +61,20 @@ public class RoleDao {
      * </p>
      *
      * @param roleId
-     *         Id of the role to search for.
+     *         id of the role to search for.
      * @return Role containing data from the database or null.
      * @throws StudentManagementException
      *         if a database access error occurs while retrieving the role by its id.
      */
     public Role getRoleById(int roleId) throws StudentManagementException {
-        Role role = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
-            role = session.get(Role.class, roleId);
+            Role role = session.get(Role.class, roleId);
             if (role != null) {
                 Hibernate.initialize(role.getStudents());
             }
+            return role;
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while getting role by its Id :" + roleId, e);
         }
-        return role;
     }
 }

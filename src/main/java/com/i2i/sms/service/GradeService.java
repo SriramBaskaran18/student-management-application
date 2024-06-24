@@ -40,9 +40,7 @@ public class GradeService {
      *         if an error occurs while inserting the grade.
      */
     public Grade addGrade(int std, String section) throws StudentManagementException {
-        Grade grade = new Grade();  
-        grade.setStd(std);
-        grade.setSection(section);
+        Grade grade = new Grade(std, section);
         return gradeDao.addGrade(grade);
     }
 
