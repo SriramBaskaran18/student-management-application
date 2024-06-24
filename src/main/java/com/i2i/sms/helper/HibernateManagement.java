@@ -10,15 +10,11 @@ public class HibernateManagement {
 
     static {
         Dotenv dotenv = Dotenv.load();
-        String dbUrl = dotenv.get("URL");
-        String dbUser = dotenv.get("USER_NAME");
-        String dbPassword = dotenv.get("PASSWORD");
 
-        Configuration configuration = new Configuration();
-        configuration.configure();
-        configuration.setProperty("hibernate.connection.url", dbUrl);
-        configuration.setProperty("hibernate.connection.username", dbUser);
-        configuration.setProperty("hibernate.connection.password", dbPassword);
+        Configuration configuration = new Configuration().configure();
+        configuration.setProperty("hibernate.connection.url", dotenv.get("URL"));
+        configuration.setProperty("hibernate.connection.username", dotenv.get("USER_NAME"));
+        configuration.setProperty("hibernate.connection.password", dotenv.get("PASSWORD"));
 
         sessionFactory = configuration.buildSessionFactory();
     }
