@@ -15,6 +15,8 @@ import com.i2i.sms.service.RoleService;
 import com.i2i.sms.service.StudentService;
 import com.i2i.sms.utils.DateUtils;
 import com.i2i.sms.utils.StringValidationUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -24,6 +26,7 @@ import com.i2i.sms.utils.StringValidationUtil;
  */
 public class StudentController {
     public static Scanner scanner = new Scanner(System.in);
+    private final Logger logger = LoggerFactory.getLogger(StudentController.class);
     public StudentService studentService = new StudentService();
     public RoleService roleService = new RoleService();
 
@@ -67,7 +70,7 @@ public class StudentController {
                 }
                 break;
             }
-            System.out.println("Enter Your Address : \n");
+            System.out.println("Enter Your Address \n");
             System.out.println("Enter Your Door NO. :");
             String doorNumber = scanner.next();
             scanner.nextLine();
@@ -94,7 +97,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 
@@ -144,7 +147,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
         return pickedRoles;
     }
@@ -161,7 +164,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 
@@ -186,7 +189,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 
@@ -209,7 +212,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 

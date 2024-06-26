@@ -1,0 +1,18 @@
+<Configuration>
+    <Appenders>
+        <RollingFile name="RollingFile" fileName="c:/logs/StudentManagementApplication.log"
+                     filePattern="c:/logs/StudentManagementApplication-%d{yyyy-MM-dd-HH}.log">
+            <PatternLayout pattern="Date - %d{yyyy-MM-dd HH:mm:ss}%nRoot level - [%p]%nLogger name - %c{6}-->
+                     %nClass Name - %C{6}%nMethod's Name - %M{6}%nMessage- %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="24"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

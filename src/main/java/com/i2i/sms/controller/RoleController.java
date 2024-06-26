@@ -2,12 +2,16 @@ package com.i2i.sms.controller;
 
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.service.RoleService;
 
 public class RoleController {
     public static Scanner scanner = new Scanner(System.in);
+    private final Logger logger = LoggerFactory.getLogger(RoleController.class);
     public RoleService roleService = new RoleService();
 
     /**
@@ -28,7 +32,7 @@ public class RoleController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 }

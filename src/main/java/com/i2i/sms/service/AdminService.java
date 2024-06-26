@@ -1,10 +1,11 @@
 package com.i2i.sms.service;
 
+import java.util.List;
+
 import com.i2i.sms.dao.AdminDao;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Admin;
 
-import java.util.List;
 
 public class AdminService {
     private AdminDao adminDao = new AdminDao();
@@ -47,5 +48,19 @@ public class AdminService {
      */
     public List<Admin> getAllAdmins() throws StudentManagementException {
         return adminDao.getAllAdmins();
+    }
+
+    /**
+     * <p>
+     * Retrieves a Admin object from the database if it exists based on the given username and password.
+     * </p>
+     *
+     * @param adminName the adminName to be searched for.
+     * @param adminPass the adminPass of the admin to be searched for.
+     * @return true if the admin exists, otherwise false.
+     * @throws StudentManagementException if an error occurs while checking if the admin exists.
+     */
+    public boolean isAdminExists(String adminName, String adminPass) throws StudentManagementException {
+        return adminDao.isAdminExists(adminName, adminPass);
     }
 }

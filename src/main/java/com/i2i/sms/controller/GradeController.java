@@ -2,6 +2,9 @@ package com.i2i.sms.controller;
 
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Grade;
 import com.i2i.sms.service.GradeService;
@@ -9,8 +12,9 @@ import com.i2i.sms.service.GradeService;
 public class GradeController {
 
     public static Scanner scanner = new Scanner(System.in);
+    private final Logger logger = LoggerFactory.getLogger(GradeController.class);
     public static GradeService gradeService = new GradeService();
- 
+
     public void getAllGrades() {
         try {
             for (Grade grade : gradeService.getAllGrades()) {
@@ -18,9 +22,10 @@ public class GradeController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
+
     /**
      * <p>
      * retrieves the specific grade with associated students.
@@ -33,16 +38,16 @@ public class GradeController {
             displayGrade(gradeService.getGradeById(gradeId));
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
     /**
      * <p>
-     * Prompts User to enter the id of the grade to be removed, 
-     * it will display a success message if the specified grade removed or 
+     * Prompts User to enter the id of the grade to be removed,
+     * it will display a success message if the specified grade removed or
      * else it will display a warning message with the corresponding grade id.
-     * </p> 
+     * </p>
      */
     public void deleteGradeById() {
         try {
@@ -52,19 +57,20 @@ public class GradeController {
             if (isGradeDelete) {
                 System.out.println("**Grade Deleted successfully**");
             } else {
-                System.out.println("**Grade with this Id:"+ gradeId +" not found to delete**");
+                System.out.println("**Grade with this Id:" + gradeId + " not found to delete**");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
+
     /**
      * <p>
-     * Display the grade data.   
+     * Display the grade data.
      * </p>
-     * @param grade
-     *           Grade will have Standard, Section and gradeId.
+     *
+     * @param grade Grade will have Standard, Section and gradeId.
      */
     public void displayGrade(Grade grade) {
         System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");

@@ -3,11 +3,14 @@ package com.i2i.sms.controller;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Admin;
 import com.i2i.sms.service.AdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
 public class AdminController {
     public static Scanner scanner = new Scanner(System.in);
+    private final Logger logger = LoggerFactory.getLogger(AddressController.class);
     public AdminService adminService = new AdminService();
 
     /**
@@ -23,8 +26,8 @@ public class AdminController {
             String adminPassword = scanner.nextLine();
             System.out.println(adminService.addAdmin(adminName, adminPassword));
         } catch (StudentManagementException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -45,8 +48,8 @@ public class AdminController {
                 System.out.println("Admin Not found to delete");
             }
         } catch (StudentManagementException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -61,8 +64,29 @@ public class AdminController {
                 System.out.println(admin);
             }
         } catch (StudentManagementException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * <p>
+     * Retrieves a Admin object from the database if it exists based on the given username and password.
+     * </p>
+     * @param adminName
+     *         the adminName to be searched for.
+     * @param adminPass
+     *         the adminPass of the admin to be searched for.
+     * @return
+     *         true if the admin exists, otherwise false.
+     */
+    public boolean isAdminExists(String adminName, String adminPass) {
+        try {
+            return adminService.isAdminExists(adminName, adminPass);
+        } catch (StudentManagementException e) {
+            System.err.println(e.getMessage());
+            logger.error(e.getMessage(), e);
+        }
+        return false;
     }
 }

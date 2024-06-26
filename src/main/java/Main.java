@@ -1,7 +1,14 @@
 import java.util.Scanner;
 
-import com.i2i.sms.controller.*;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.i2i.sms.controller.AddressController;
+import com.i2i.sms.controller.AdminController;
+import com.i2i.sms.controller.GradeController;
+import com.i2i.sms.controller.RoleController;
+import com.i2i.sms.controller.StudentController;
 
 
 /**
@@ -12,6 +19,7 @@ import io.github.cdimascio.dotenv.Dotenv;
  * </p>
  */
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static Scanner scanner = new Scanner(System.in);
     private static AddressController addressController = new AddressController();
     private static AdminController adminController = new AdminController();
@@ -26,7 +34,7 @@ public class Main {
      * searching, deleting, or exiting the application.
      * </p>
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         boolean isAccess = true;
         while (isAccess) {
             System.out.println("Enter your choice :");
@@ -85,18 +93,22 @@ public class Main {
                     }
                     break;
                 case 4:
-                    System.out.println("Enter 1 to delete student");
-                    System.out.println("Enter 2 to delete grade");
-                    pick = scanner.nextInt();
-                    switch (pick) {
-                        case 1:
-                            studentController.deleteStudentById();
-                            break;
-                        case 2:
-                            gradeController.deleteGradeById();
-                            break;
-                        default:
-                            System.out.println("____Invalid Pick____");
+                    if (checkAdminPass()) {
+                        System.out.println("Enter 1 to delete student");
+                        System.out.println("Enter 2 to delete grade");
+                        pick = scanner.nextInt();
+                        switch (pick) {
+                            case 1:
+                                studentController.deleteStudentById();
+                                break;
+                            case 2:
+                                gradeController.deleteGradeById();
+                                break;
+                            default:
+                                System.out.println("____Invalid Pick____");
+                        }
+                    } else {
+                        System.out.println("____Invalid AdminPass____");
                     }
                     break;
                 case 5:
@@ -118,13 +130,14 @@ public class Main {
                             default:
                                 System.out.println("____Invalid Pick____");
                         }
-                        break;
                     } else {
                         System.out.println("____Invalid UserName or Password____");
                     }
+                    break;
                 case 6:
                     System.out.println("Exiting---->");
                     isAccess = false;
+                    logger.info("Application Ended");
                     break;
                 default:
                     System.out.println("\n_____Invalid Choice_____");
@@ -132,12 +145,18 @@ public class Main {
         }
     }
 
+    /**
+     * <p>
+     * checks the entered admin name, pass are right or wrong .
+     * </p>
+     * @return true if the admin name, pass are right otherwise false.
+     */
     public static boolean checkAdminPass() {
         Dotenv dotenv = Dotenv.load();
         System.out.println("Enter Admin Name :");
         String userName = scanner.next();
         System.out.println("Enter Admin password :");
         String password = scanner.next();
-        return userName.equals(dotenv.get("ADMIN_USER_NAME")) && password.equals(dotenv.get("ADMIN_PASSWORD"));
+        return (userName.equals(dotenv.get("ADMIN_USER_NAME")) && password.equals(dotenv.get("ADMIN_PASSWORD"))) || adminController.isAdminExists(userName,password);
     }
 }

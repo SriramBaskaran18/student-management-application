@@ -9,8 +9,8 @@ import javax.persistence.Table;
 
 /**
  * <p>
- *  The Admin class represents a admin entity with attributes such as ID, name, and password.
- *  </p>
+ * The Admin class represents a admin entity with attributes such as ID, name, and password.
+ * </p>
  */
 @Entity
 @Table(name = "admin")
@@ -56,5 +56,13 @@ public class Admin {
 
     public void setAdminPassword(String adminPassword) {
         this.adminPassword = adminPassword;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Admin {").append("id :").append(id)
+                .append(", Name :").append(adminName).append("}");
+        return stringBuilder.toString();
     }
 }
