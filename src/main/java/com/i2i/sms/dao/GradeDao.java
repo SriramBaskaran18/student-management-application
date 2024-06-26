@@ -5,25 +5,25 @@ import java.util.List;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
 import com.i2i.sms.model.Grade;
-
 public class GradeDao {
+    Logger logger = LoggerFactory.getLogger(GradeDao.class);
 
     /**
      * <p>
      * Retrieves a Grade object from the database if it exists based on the given standard and section.
      * </p>
-     * @param standard 
-     *         the standard to be searched for.
-     * @param section 
-     *         the section of the grade to be searched for.
-     * @return 
-     *         the Grade object if it exists, otherwise null object.
-     * @throws StudentManagementException 
-     *         if an error occurs while checking if the grade exists.
+     *
+     * @param standard the standard to be searched for.
+     * @param section  the section of the grade to be searched for.
+     * @return the Grade object if it exists, otherwise null object.
+     * @throws StudentManagementException if an error occurs while checking if the grade exists.
      */
     public Grade getGradeIfGradeExists(int standard, String section) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
@@ -32,21 +32,20 @@ public class GradeDao {
             query.setParameter("section", section);
             return query.uniqueResult();
         } catch (Exception e) {
-            throw new StudentManagementException("error occurred while checking grade exists or not with standard :"+standard +" and section :"+section, e);
+            throw new StudentManagementException("error occurred while checking grade exists or not with standard :" + standard + " and section :" + section, e);
         }
     }
 
     /**
      * <p>
-     * Adds a new Grade object to the database. 
-     * This method initiates a transaction, saves the Grade object, 
+     * Adds a new Grade object to the database.
+     * This method initiates a transaction, saves the Grade object,
      * commits the transaction, and handles any exceptions that may occur.
      * </p>
-     * @param grade 
-     *         the Grade object with standard and section to be added to the database.
+     *
+     * @param grade the Grade object with standard and section to be added to the database.
      * @return The inserted grade record or null.
-     * @throws StudentManagementException 
-     *         if an error occurs while inserting the grade.
+     * @throws StudentManagementException if an error occurs while inserting the grade.
      */
     public Grade addGrade(Grade grade) throws StudentManagementException {
         Transaction transaction = null;
@@ -54,37 +53,38 @@ public class GradeDao {
             transaction = session.beginTransaction();
             session.save(grade);
             transaction.commit();
+            logger.info("Grade Added successfully with Grade: {}", grade);
             return grade;
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
             throw new StudentManagementException("Error occurred while inserting grade", e);
         }
     }
+
     /**
      * <p>
      * Retrieves a Grade object from the database based on the provided grade ID.
      * </p>
-     * @param gradeId 
-     *         the ID of the Grade to be retrieved.
+     *
+     * @param gradeId the ID of the Grade to be retrieved.
      * @return the Grade object with the specified ID.
-     * @throws StudentManagementException 
-     *         if an error occurs while fetching the grade.
+     * @throws StudentManagementException if an error occurs while fetching the grade.
      */
     public Grade getGradeById(int gradeId) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
             return session.get(Grade.class, gradeId);
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while fetching grade with id :"+ gradeId, e);
+            throw new StudentManagementException("Error occurred while fetching grade with id :" + gradeId, e);
         }
     }
-        
+
     /**
      * <p>
      * Retrieves all Grade objects from the database.
      * </p>
+     *
      * @return A List containing all Grade objects retrieved from the database.
-     * @throws StudentManagementException 
-     *         if an error occurs while fetching all grades.
+     * @throws StudentManagementException if an error occurs while fetching all grades.
      */
     public List<Grade> getAllGrades() throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
@@ -93,16 +93,15 @@ public class GradeDao {
             throw new StudentManagementException("Error Occurred While Fetching All Grades", e);
         }
     }
-   
+
     /**
      * <p>
      * Deletes a Grade from the database based on its ID.
      * </p>
-     * @param gradeId 
-     *         the ID of the Grade to be deleted.
+     *
+     * @param gradeId the ID of the Grade to be deleted.
      * @return true if the Grade was successfully deleted, false otherwise (if the Grade not found).
-     * @throws StudentManagementException 
-     *         if an error occurs while deleting the Grade.
+     * @throws StudentManagementException if an error occurs while deleting the Grade.
      */
     public boolean deleteGradeById(int gradeId) throws StudentManagementException {
         Transaction transaction = null;
@@ -112,6 +111,7 @@ public class GradeDao {
             if (grade != null) {
                 session.delete(grade);
                 transaction.commit();
+                logger.info("Grade Deleted successfully with grade Id: {}",gradeId);
                 return true;
             }
         } catch (Exception e) {

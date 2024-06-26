@@ -45,7 +45,7 @@ public class AdminController {
             if (adminService.deleteAdminById(adminId)) {
                 System.out.println("Deleted Successfully");
             } else {
-                System.out.println("Admin Not found to delete");
+                logger.warn("Admin Not found With id: {} to delete",adminId);
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());

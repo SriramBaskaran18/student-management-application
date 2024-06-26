@@ -35,6 +35,7 @@ public class Main {
      * </p>
      */
     public static void main(String[] args) {
+        logger.debug("Application Started");
         boolean isAccess = true;
         while (isAccess) {
             System.out.println("Enter your choice :");
@@ -66,7 +67,7 @@ public class Main {
                                 System.out.println("\n____Invalid Pick____");
                         }
                     } else {
-                        System.out.println("____Invalid AdminPass____");
+                        System.out.println("____Invalid AdminName and AdminPassword____");
                     }
                     break;
                 case 3:
@@ -108,7 +109,7 @@ public class Main {
                                 System.out.println("____Invalid Pick____");
                         }
                     } else {
-                        System.out.println("____Invalid AdminPass____");
+                        System.out.println("____Invalid AdminName and AdminPassword____");
                     }
                     break;
                 case 5:
@@ -137,7 +138,7 @@ public class Main {
                 case 6:
                     System.out.println("Exiting---->");
                     isAccess = false;
-                    logger.info("Application Ended");
+                    logger.debug("Application Ended");
                     break;
                 default:
                     System.out.println("\n_____Invalid Choice_____");
@@ -152,6 +153,7 @@ public class Main {
      * @return true if the admin name, pass are right otherwise false.
      */
     public static boolean checkAdminPass() {
+        logger.debug("checking the Admin Name and Admin Password");
         Dotenv dotenv = Dotenv.load();
         System.out.println("Enter Admin Name :");
         String userName = scanner.next();

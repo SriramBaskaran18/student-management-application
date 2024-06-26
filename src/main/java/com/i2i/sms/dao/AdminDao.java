@@ -7,10 +7,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class AdminDao {
+    private final Logger logger = LoggerFactory.getLogger(AdminDao.class);
+
     /**
      * <p>
      * Adds a admin to the database.
@@ -25,6 +29,7 @@ public class AdminDao {
             transaction = session.beginTransaction();
             session.save(admin);
             transaction.commit();
+            logger.info("Admin Added successfully with AdminName: {}", admin.getAdminName());
             return admin;
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
@@ -49,6 +54,7 @@ public class AdminDao {
             if (null != admin) {
                 session.delete(admin);
                 transaction.commit();
+                logger.info("Admin Deleted successfully with Admin Id: {}", adminId);
                 return true;
             }
         } catch (Exception e) {
@@ -79,17 +85,18 @@ public class AdminDao {
      * Retrieves a Admin object from the database if it exists based on the given username and password.
      * </p>
      *
-     * @param adminName the adminName to be searched for.
-     * @param adminPass the adminPass of the admin to be searched for.
+     * @param adminName     the adminName to be searched for.
+     * @param adminPassword the adminPass of the admin to be searched for.
      * @return true if the admin exists, otherwise false.
      * @throws StudentManagementException if an error occurs while checking if the admin exists.
      */
-    public boolean isAdminExists(String adminName, String adminPass) throws StudentManagementException {
+    public boolean isAdminExists(String adminName, String adminPassword) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
-            Query<Admin> query = session.createQuery("from Admin where admin_name= :adminName and admin_password= :adminPass", Admin.class);
+            Query<Admin> query = session.createQuery("from Admin where admin_name= :adminName and admin_password= :adminPassword", Admin.class);
             query.setParameter("adminName", adminName);
-            query.setParameter("adminPass", adminPass);
+            query.setParameter("adminPassword", adminPassword);
             if (null != query.uniqueResult()) {
+                logger.info("Corresponding admin found by name : {}", adminName);
                 return true;
             }
         } catch (Exception e) {
