@@ -3,12 +3,15 @@ import java.util.Scanner;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.i2i.sms.controller.AddressController;
 import com.i2i.sms.controller.AdminController;
 import com.i2i.sms.controller.GradeController;
 import com.i2i.sms.controller.RoleController;
 import com.i2i.sms.controller.StudentController;
+import org.springframework.context.annotation.ComponentScan;
 
 
 /**
@@ -18,14 +21,20 @@ import com.i2i.sms.controller.StudentController;
  * deleting student records, and handling roles associated with students.
  * </p>
  */
+@ComponentScan(basePackages = "com.i2i.sms")
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static Scanner scanner = new Scanner(System.in);
-    private static AddressController addressController = new AddressController();
-    private static AdminController adminController = new AdminController();
-    private static GradeController gradeController = new GradeController();
-    private static RoleController roleController = new RoleController();
-    private static StudentController studentController = new StudentController();
+    @Autowired
+    private AddressController addressController;
+    @Autowired
+    private AdminController adminController;
+    @Autowired
+    private GradeController gradeController;
+    @Autowired
+    private RoleController roleController;
+    @Autowired
+    private StudentController studentController;
 
     /**
      * <p>
@@ -34,7 +43,15 @@ public class Main {
      * searching, deleting, or exiting the application.
      * </p>
      */
+
+
     public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
+        Main main = context.getBean(Main.class);
+        main.startApplication();
+    }
+
+    public void startApplication() {
         logger.debug("Application Started");
         boolean isAccess = true;
         while (isAccess) {
@@ -150,15 +167,18 @@ public class Main {
      * <p>
      * checks the entered admin name, pass are right or wrong .
      * </p>
+     *
      * @return true if the admin name, pass are right otherwise false.
      */
-    public static boolean checkAdminPass() {
+    public boolean checkAdminPass() {
         logger.debug("checking the Admin Name and Admin Password");
         Dotenv dotenv = Dotenv.load();
         System.out.println("Enter Admin Name :");
         String userName = scanner.next();
         System.out.println("Enter Admin password :");
         String password = scanner.next();
-        return (userName.equals(dotenv.get("ADMIN_USER_NAME")) && password.equals(dotenv.get("ADMIN_PASSWORD"))) || adminController.isAdminExists(userName,password);
+        return (userName.equals(dotenv.get("ADMIN_USER_NAME")) &&
+                password.equals(dotenv.get("ADMIN_PASSWORD"))) ||
+                adminController.isAdminExists(userName, password);
     }
 }

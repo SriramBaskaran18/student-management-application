@@ -4,15 +4,19 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.service.RoleService;
 
+@Controller
 public class RoleController {
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(RoleController.class);
-    public RoleService roleService = new RoleService();
+    @Autowired
+    public RoleService roleService;
 
     /**
      * <p>
@@ -29,10 +33,11 @@ public class RoleController {
                 System.out.println(role.getStudents());
             } else {
                 System.out.println("No Role Exists");
+                logger.warn("No Role Exists");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 }

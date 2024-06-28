@@ -4,13 +4,15 @@ import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
 import com.i2i.sms.model.Role;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Repository
 public class RoleDao {
     Logger logger = LoggerFactory.getLogger(RoleDao.class);
 
@@ -25,11 +27,14 @@ public class RoleDao {
      */
     public Role getRoleIfRoleExists(String roleName) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
-            Query<Role> query = session.createQuery("FROM Role WHERE name = :roleName", Role.class);
+            logger.debug("Process started to fetch the role: {} if exists", roleName);
+            Query<Role> query = session.createQuery("FROM Role WHERE name = :roleName"
+                    , Role.class);
             query.setParameter("roleName", roleName);
             return query.uniqueResult();
         } catch (Exception e) {
-            throw new StudentManagementException("Error Occurred While checking if Role exists or not with role name :" + roleName, e);
+            throw new StudentManagementException("Error Occurred While checking if Role exists"
+                    + " or not with role name :" + roleName, e);
         }
     }
 
@@ -45,6 +50,7 @@ public class RoleDao {
     public Role addRole(Role role) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Process started to add role: {} in the database", role.getName());
             transaction = session.beginTransaction();
             session.save(role);
             transaction.commit();
@@ -58,15 +64,18 @@ public class RoleDao {
 
     /**
      * <p>
-     * Fetch role record by its id and also fetch the corresponding students of that role from the student table by using role Id.
+     * Fetch role record by its id and also fetch the
+     * corresponding students of that role from the student table by using role Id.
      * </p>
      *
      * @param roleId id of the role to search for.
      * @return Role containing data from the database or null.
-     * @throws StudentManagementException if a database access error occurs while retrieving the role by its id.
+     * @throws StudentManagementException if a database access error occurs while retrieving
+     *                                    the role by its id.
      */
     public Role getRoleById(int roleId) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Received input roleId: {} to search the role in the database", roleId);
             Role role = session.get(Role.class, roleId);
             if (role != null) {
                 Hibernate.initialize(role.getStudents());
@@ -74,7 +83,8 @@ public class RoleDao {
             }
             return role;
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while getting role by its Id :" + roleId, e);
+            throw new StudentManagementException("Error occurred while getting role by its Id :"
+                    + roleId, e);
         }
     }
 }

@@ -4,16 +4,20 @@ import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Grade;
 import com.i2i.sms.service.GradeService;
 
+@Controller
 public class GradeController {
 
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(GradeController.class);
-    public static GradeService gradeService = new GradeService();
+    @Autowired
+    public static GradeService gradeService;
 
     public void getAllGrades() {
         try {
@@ -58,6 +62,7 @@ public class GradeController {
                 System.out.println("**Grade Deleted successfully**");
             } else {
                 System.out.println("**Grade with this Id:" + gradeId + " not found to delete**");
+                logger.warn("Grade with this Id: {} not found to delete", gradeId);
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());

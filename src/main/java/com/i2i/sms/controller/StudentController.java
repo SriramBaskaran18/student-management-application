@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.i2i.sms.common.RoleEnum;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Address;
@@ -15,20 +18,24 @@ import com.i2i.sms.service.RoleService;
 import com.i2i.sms.service.StudentService;
 import com.i2i.sms.utils.DateUtils;
 import com.i2i.sms.utils.StringValidationUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 /**
  * <p>
- * Methods within this class handle user inputs, validate data, and delegate tasks to respective services.
+ * Methods within this class handle user inputs, validate data,
+ * and delegate tasks to respective services.
  * It also contains methods for displaying student data.
  * </p>
  */
+@Controller
 public class StudentController {
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(StudentController.class);
-    public StudentService studentService = new StudentService();
-    public RoleService roleService = new RoleService();
+    @Autowired
+    public StudentService studentService;
+    @Autowired
+    public RoleService roleService;
 
     /**
      * <p>
@@ -88,23 +95,25 @@ public class StudentController {
             Address address = new Address(doorNumber, street, city, state, zipcode, mobileNumber);
             Set<Role> roles = addRole();
             Student insertedStudent = studentService.addStudent(name, dob, std, section, address, roles);
-            if (insertedStudent != null) {
+            if (null != insertedStudent) {
                 displayStudent(insertedStudent);
                 System.out.println(insertedStudent.getGrade());
                 System.out.println("**Student Data Added to the Database**");
             } else {
                 System.out.println("Unable to add Student");
+                logger.warn("Unable to add Student");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
     /**
      * <p>
      * Allow Student to select roles from a predefined list and adds the selected roles to a set.
-     * The student can select multiple roles and the method ensures that each role is picked only once.
+     * The student can select multiple roles and the method ensures that
+     * each role is picked only once.
      * The method continues to prompt for role selection until the user chooses to exit.
      * </p>
      *
@@ -137,8 +146,10 @@ public class StudentController {
                     picks.add(pick);
                 } else {
                     System.out.println("You Already Picked That Role");
+                    logger.warn("You Already Picked That Role");
                 }
-                System.out.println("1--> Continue with another role \n press any number and Enter--> Exit....");
+                System.out.println("1--> Continue with another role "
+                        + "\n press any number and Enter--> Exit....");
                 int option = scanner.nextInt();
                 if (option == 1) {
                     continue;
@@ -147,7 +158,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         return pickedRoles;
     }
@@ -164,13 +175,14 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
     /**
      * <p>
-     * Retrieves the corresponding student details and displays the student information to the user.
+     * Retrieves the corresponding student details and displays the
+     * student information to the user.
      * </p>
      */
     public void getStudentById() {
@@ -186,10 +198,11 @@ public class StudentController {
                 System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
                 System.out.println("\n**No Student Exists**");
                 System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
+                logger.warn("No Student Exists");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -209,10 +222,11 @@ public class StudentController {
                 System.out.println("**Student Deleted successfully**");
             } else {
                 System.out.println("**Student Id:" + studentId + " not found to delete**");
+                logger.warn("Student Id: {} not found to delete", studentId);
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -224,9 +238,11 @@ public class StudentController {
      * @param student Student will have Name, D.O.B in the yyyy-MM-dd format, Age, and Grade.
      */
     public void displayStudent(Student student) {
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
+        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
+                + " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
         System.out.println(student);
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
+        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
+                + " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
     }
 
 }

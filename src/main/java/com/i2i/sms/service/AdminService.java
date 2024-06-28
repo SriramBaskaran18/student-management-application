@@ -5,10 +5,13 @@ import java.util.List;
 import com.i2i.sms.dao.AdminDao;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Admin;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class AdminService {
-    private AdminDao adminDao = new AdminDao();
+    @Autowired
+    private AdminDao adminDao;
 
     /**
      * <p>
@@ -52,7 +55,8 @@ public class AdminService {
 
     /**
      * <p>
-     * Retrieves a Admin object from the database if it exists based on the given username and password.
+     * Retrieves a Admin object from the database if it exists based on the
+     * given username and password.
      * </p>
      *
      * @param adminName the adminName to be searched for.

@@ -1,17 +1,22 @@
 package com.i2i.sms.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Admin;
 import com.i2i.sms.service.AdminService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
+@Controller
 public class AdminController {
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(AddressController.class);
-    public AdminService adminService = new AdminService();
+    @Autowired
+    public AdminService adminService;
 
     /**
      * <p>
@@ -45,6 +50,7 @@ public class AdminController {
             if (adminService.deleteAdminById(adminId)) {
                 System.out.println("Deleted Successfully");
             } else {
+                System.out.println("Admin Not found to delete");
                 logger.warn("Admin Not found With id: {} to delete",adminId);
             }
         } catch (StudentManagementException e) {

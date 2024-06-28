@@ -7,11 +7,15 @@ import com.i2i.sms.model.Address;
 import com.i2i.sms.service.AddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class AddressController {
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(AddressController.class);
-    public AddressService addressService = new AddressService();
+    @Autowired
+    public AddressService addressService;
 
     /**
      * <p>
@@ -28,6 +32,7 @@ public class AddressController {
                         " Student Name:" + address.getStudent().getName());
             } else {
                 System.out.println("Address not Exists");
+                logger.warn("Address not Exists");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());

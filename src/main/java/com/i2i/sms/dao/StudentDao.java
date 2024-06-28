@@ -5,15 +5,17 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
 import com.i2i.sms.model.Student;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Repository
 public class StudentDao {
-    Logger logger = LoggerFactory.getLogger(StudentDao.class);
+    private final Logger logger = LoggerFactory.getLogger(StudentDao.class);
 
     /**
      * <p>
@@ -26,6 +28,8 @@ public class StudentDao {
     public Student addStudent(Student student) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Process started to add student: {} in the database",
+                    student.getName());
             transaction = session.beginTransaction();
             session.save(student);
             transaction.commit();
@@ -33,7 +37,8 @@ public class StudentDao {
             return student;
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error Occurred While Adding student: " + student, e);
+            throw new StudentManagementException("Error Occurred While Adding student: "
+                    + student, e);
         }
     }
 
@@ -49,6 +54,8 @@ public class StudentDao {
      */
     public Student getStudentById(int studentId) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Received input studentId: {} to search the student in the database",
+                    studentId);
             Student student = session.get(Student.class, studentId);
             if (student != null) {
                 Hibernate.initialize(student.getGrade());
@@ -58,7 +65,8 @@ public class StudentDao {
             }
             return student;
         } catch (Exception e) {
-            throw new StudentManagementException("Error fetching student with ID: " + studentId, e);
+            throw new StudentManagementException("Error fetching student with ID: " +
+                    studentId, e);
         }
     }
 
@@ -72,6 +80,7 @@ public class StudentDao {
      */
     public List<Student> getAllStudents() throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Process started to fetch all the students from the database");
             return session.createQuery("from Student", Student.class).list();
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while fetching all students", e);
@@ -90,6 +99,8 @@ public class StudentDao {
     public boolean deleteStudentById(int studentId) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Received input studentId: {} to remove the student in the database",
+                    studentId);
             transaction = session.beginTransaction();
             Student student = session.get(Student.class, studentId);
             if (student != null) {
@@ -103,7 +114,8 @@ public class StudentDao {
             }
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error occurred while deleting student by its id :" + studentId, e);
+            throw new StudentManagementException("Error occurred while deleting student by its id :"
+                    + studentId, e);
         }
         return false;
     }

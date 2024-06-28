@@ -1,17 +1,19 @@
 package com.i2i.sms.dao;
 
+import java.util.List;
+
+import org.hibernate.query.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.helper.HibernateManagement;
 import com.i2i.sms.model.Admin;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
-import org.hibernate.query.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
+@Repository
 public class AdminDao {
     private final Logger logger = LoggerFactory.getLogger(AdminDao.class);
 
@@ -26,6 +28,7 @@ public class AdminDao {
     public Admin addAdmin(Admin admin) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Process started to add admin: {} in the database", admin.getAdminName());
             transaction = session.beginTransaction();
             session.save(admin);
             transaction.commit();
@@ -49,6 +52,7 @@ public class AdminDao {
     public boolean deleteAdminById(int adminId) throws StudentManagementException {
         Transaction transaction = null;
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Received input adminId: {} to remove the admin in the database", adminId);
             transaction = session.beginTransaction();
             Admin admin = session.get(Admin.class, adminId);
             if (null != admin) {
@@ -59,7 +63,8 @@ public class AdminDao {
             }
         } catch (Exception e) {
             HibernateManagement.rollBackTransaction(transaction);
-            throw new StudentManagementException("Error occurred while deleting Admin with its id:" + adminId, e);
+            throw new StudentManagementException("Error occurred while deleting Admin with its id:"
+                    + adminId, e);
         }
         return false;
     }
@@ -74,6 +79,7 @@ public class AdminDao {
      */
     public List<Admin> getAllAdmins() throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
+            logger.debug("Process started to fetch all the admins from the database");
             return session.createQuery("FROM Admin", Admin.class).list();
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while fetching all admins", e);
@@ -82,7 +88,8 @@ public class AdminDao {
 
     /**
      * <p>
-     * Retrieves a Admin object from the database if it exists based on the given username and password.
+     * Retrieves a Admin object from the database if it exists based on the given
+     * username and password.
      * </p>
      *
      * @param adminName     the adminName to be searched for.
@@ -92,7 +99,10 @@ public class AdminDao {
      */
     public boolean isAdminExists(String adminName, String adminPassword) throws StudentManagementException {
         try (Session session = HibernateManagement.getSessionFactory().openSession()) {
-            Query<Admin> query = session.createQuery("from Admin where admin_name= :adminName and admin_password= :adminPassword", Admin.class);
+            logger.debug("Process started to fetch the details of admin name: {} from the database"
+                    , adminName);
+            Query<Admin> query = session.createQuery("from Admin where admin_name= :adminName and "
+                    + "admin_password= :adminPassword", Admin.class);
             query.setParameter("adminName", adminName);
             query.setParameter("adminPassword", adminPassword);
             if (null != query.uniqueResult()) {
@@ -100,7 +110,8 @@ public class AdminDao {
                 return true;
             }
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while checking admin details with adminName :" + adminName, e);
+            throw new StudentManagementException("Error occurred while checking admin details"
+                    + " with adminName :" + adminName, e);
         }
         return false;
     }
