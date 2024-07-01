@@ -17,7 +17,7 @@ public class GradeController {
     public static Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(GradeController.class);
     @Autowired
-    public static GradeService gradeService;
+    private GradeService gradeService;
 
     public void getAllGrades() {
         try {

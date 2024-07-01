@@ -43,8 +43,6 @@ public class Main {
      * searching, deleting, or exiting the application.
      * </p>
      */
-
-
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
         Main main = context.getBean(Main.class);

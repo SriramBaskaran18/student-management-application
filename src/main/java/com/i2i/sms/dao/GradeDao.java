@@ -15,7 +15,7 @@ import com.i2i.sms.model.Grade;
 
 @Repository
 public class GradeDao {
-    Logger logger = LoggerFactory.getLogger(GradeDao.class);
+    private final Logger logger = LoggerFactory.getLogger(GradeDao.class);
 
     /**
      * <p>
