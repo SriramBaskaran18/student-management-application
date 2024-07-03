@@ -2,15 +2,15 @@ package com.i2i.sms.model;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 /**
  * <p>
@@ -26,7 +26,7 @@ public class Grade {
     private int id;
 
     @Column(name = "standard")
-    private int std;
+    private int standard;
 
     @Column(name = "section")
     private String section;
@@ -37,8 +37,8 @@ public class Grade {
     public Grade() {
     }
 
-    public Grade(int std, String section) {
-        this.std = std;
+    public Grade(int standard, String section) {
+        this.standard = standard;
         this.section = section;
     }
 
@@ -51,11 +51,11 @@ public class Grade {
     }
 
     public int getStd() {
-        return std;
+        return standard;
     }
 
-    public void setStd(int std) {
-        this.std = std;
+    public void setStd(int standard) {
+        this.standard = standard;
     }
 
     public String getSection() {
@@ -78,7 +78,7 @@ public class Grade {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Grade Unique Id : ").append(id)
-                .append("\nStudent's Standard : ").append(std)
+                .append("\nStudent's Standard : ").append(standard)
                 .append("\nStudent's Section : ").append(section);
         return stringBuilder.toString();
     }

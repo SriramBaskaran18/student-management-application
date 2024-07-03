@@ -15,10 +15,9 @@ public final class DateUtils {
        * Date for which difference need to be calculated and it is in "yyyy-MM-dd" format.
        * @return The Difference of dates in years,if given date is future date it will return the difference in negative.
        **/
-    public static int calculateDateDifference(String date) {
-        LocalDate parsedDate = LocalDate.parse(date);
+    public static int calculateDateDifference(LocalDate date) {
         LocalDate currentDate = LocalDate.now();
-        Period dateDifference = Period.between(parsedDate, currentDate);
+        Period dateDifference = Period.between(date, currentDate);
         return dateDifference.getYears();
     }
  

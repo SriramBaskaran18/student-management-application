@@ -5,13 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.i2i.sms.controller.AddressController;
 import com.i2i.sms.controller.AdminController;
 import com.i2i.sms.controller.GradeController;
 import com.i2i.sms.controller.RoleController;
 import com.i2i.sms.controller.StudentController;
-import org.springframework.context.annotation.ComponentScan;
 
 
 /**
@@ -93,16 +93,16 @@ public class Main {
                     pick = scanner.nextInt();
                     switch (pick) {
                         case 1:
-                            studentController.getStudentById();
+                            //studentController.getStudentById();
                             break;
                         case 2:
-                            gradeController.getGradeById();
+                            //gradeController.getGradeById();
                             break;
                         case 3:
-                            roleController.getRoleById();
+                            //roleController.getRoleById();
                             break;
                         case 4:
-                            addressController.getAddressById();
+                            //addressController.getAddressById();
                             break;
                         default:
                             System.out.println("____Invalid Pick____");
@@ -115,10 +115,10 @@ public class Main {
                         pick = scanner.nextInt();
                         switch (pick) {
                             case 1:
-                                studentController.deleteStudentById();
+                                //studentController.deleteStudentById();
                                 break;
                             case 2:
-                                gradeController.deleteGradeById();
+                                //gradeController.deleteGradeById();
                                 break;
                             default:
                                 System.out.println("____Invalid Pick____");
@@ -135,13 +135,13 @@ public class Main {
                         pick = scanner.nextInt();
                         switch (pick) {
                             case 1:
-                                adminController.addAdmin();
+                                //adminController.addAdmin();
                                 break;
                             case 2:
-                                adminController.deleteAdminById();
+                                //adminController.deleteAdminById();
                                 break;
                             case 3:
-                                adminController.getAllAdmins();
+                                //adminController.getAllAdmins();
                                 break;
                             default:
                                 System.out.println("____Invalid Pick____");

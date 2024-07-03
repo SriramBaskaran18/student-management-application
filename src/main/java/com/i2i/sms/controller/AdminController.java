@@ -1,9 +1,7 @@
 package com.i2i.sms.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Admin;
@@ -11,18 +9,20 @@ import com.i2i.sms.service.AdminService;
 
 import java.util.Scanner;
 
-@Controller
+@RestController
+@RequestMapping("sms/api/v1.0/admins")
 public class AdminController {
     public static Scanner scanner = new Scanner(System.in);
-    private final Logger logger = LoggerFactory.getLogger(AddressController.class);
+    //private final Logger logger = LoggerFactory.getLogger(AddressController.class);
     @Autowired
-    public AdminService adminService;
+    private AdminService adminService;
 
     /**
      * <p>
      * Gather information from the Admin like their name and password.
      * </p>
      */
+    @PostMapping("create-admin")
     public void addAdmin() {
         try {
             System.out.println("Enter Admin Name :");
@@ -32,7 +32,24 @@ public class AdminController {
             System.out.println(adminService.addAdmin(adminName, adminPassword));
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+            //logger.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * <p>
+     * Retrieves All the admin details and displays the admin information to the user.
+     * </p>
+     */
+    @GetMapping("find-all")
+    public void getAllAdmins() {
+        try {
+            for (Admin admin : adminService.getAllAdmins()) {
+                System.out.println(admin);
+            }
+        } catch (StudentManagementException e) {
+            System.err.println(e.getMessage());
+            //logger.error(e.getMessage(), e);
         }
     }
 
@@ -43,35 +60,18 @@ public class AdminController {
      * else it will display a warning message with the corresponding admin id.
      * </p>
      */
-    public void deleteAdminById() {
+    @DeleteMapping("delete/{id}")
+    public void deleteAdminById(@PathVariable("id") int adminId) {
         try {
-            System.out.println("Enter Admin id to delete :");
-            int adminId = scanner.nextInt();
             if (adminService.deleteAdminById(adminId)) {
                 System.out.println("Deleted Successfully");
             } else {
                 System.out.println("Admin Not found to delete");
-                logger.warn("Admin Not found With id: {} to delete",adminId);
+                //logger.warn("Admin Not found With id: {} to delete",adminId);
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * <p>
-     * Retrieves All the admin details and displays the admin information to the user.
-     * </p>
-     */
-    public void getAllAdmins() {
-        try {
-            for (Admin admin : adminService.getAllAdmins()) {
-                System.out.println(admin);
-            }
-        } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+            //logger.error(e.getMessage(), e);
         }
     }
 
@@ -91,7 +91,7 @@ public class AdminController {
             return adminService.isAdminExists(adminName, adminPass);
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+           // logger.error(e.getMessage(), e);
         }
         return false;
     }

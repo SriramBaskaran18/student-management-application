@@ -1,24 +1,25 @@
 package com.i2i.sms.controller;
 
+import java.util.Optional;
 import java.util.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Grade;
 import com.i2i.sms.service.GradeService;
 
-@Controller
+@RestController
+@RequestMapping("sms/api/v1.0/grades")
 public class GradeController {
 
     public static Scanner scanner = new Scanner(System.in);
-    private final Logger logger = LoggerFactory.getLogger(GradeController.class);
+    //private final Logger logger = LoggerFactory.getLogger(GradeController.class);
     @Autowired
     private GradeService gradeService;
 
+    @GetMapping("find-all")
     public void getAllGrades() {
         try {
             for (Grade grade : gradeService.getAllGrades()) {
@@ -26,7 +27,7 @@ public class GradeController {
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+            //logger.error(e.getMessage(), e);
         }
     }
 
@@ -35,14 +36,19 @@ public class GradeController {
      * retrieves the specific grade with associated students.
      * </p>
      */
-    public void getGradeById() {
+    @GetMapping("find/{id}")
+    public void getGradeById(@PathVariable("id") int gradeId) {
         try {
-            System.out.println("Enter GradeId to Search Specific Grade With Associated Students :");
-            int gradeId = scanner.nextInt();
-            displayGrade(gradeService.getGradeById(gradeId));
+            //System.out.println("Enter GradeId to Search Specific Grade With Associated Students :");
+            //int gradeId = scanner.nextInt();
+            Optional<Grade> grade = gradeService.getGradeById(gradeId);
+            if (grade.isPresent()) {
+                Grade fetchedGrade = grade.get();
+                displayGrade(fetchedGrade);
+            }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+            //logger.error(e.getMessage(), e);
         }
     }
 
@@ -53,20 +59,21 @@ public class GradeController {
      * else it will display a warning message with the corresponding grade id.
      * </p>
      */
-    public void deleteGradeById() {
+    @DeleteMapping("delete/{id}")
+    public void deleteGradeById(@PathVariable("id") int gradeId) {
         try {
-            System.out.println("Enter Grade ID to Delete Specific Grade :");
-            int gradeId = scanner.nextInt();
+//            System.out.println("Enter Grade ID to Delete Specific Grade :");
+//            int gradeId = scanner.nextInt();
             boolean isGradeDelete = gradeService.deleteGradeById(gradeId);
             if (isGradeDelete) {
                 System.out.println("**Grade Deleted successfully**");
             } else {
                 System.out.println("**Grade with this Id:" + gradeId + " not found to delete**");
-                logger.warn("Grade with this Id: {} not found to delete", gradeId);
+                //logger.warn("Grade with this Id: {} not found to delete", gradeId);
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
     }
 

@@ -1,20 +1,21 @@
 package com.i2i.sms.controller;
 
-import java.util.Scanner;
+import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.service.RoleService;
 
-@Controller
+@RestController
+@RequestMapping("sms/api/v1.0/roles")
 public class RoleController {
-    public static Scanner scanner = new Scanner(System.in);
-    private final Logger logger = LoggerFactory.getLogger(RoleController.class);
+//    private final Logger logger = LoggerFactory.getLogger(RoleController.class);
     @Autowired
     public RoleService roleService;
 
@@ -23,21 +24,21 @@ public class RoleController {
      * Retrieves the role with associated students by the given Id.
      * </p>
      */
-    public void getRoleById() {
+    @GetMapping("find/{id}")
+    public void getRoleById(@PathVariable("id") int roleId) {
         try {
-            System.out.println("Enter Role Id to Search Role with Associated Students :");
-            int roleId = scanner.nextInt();
-            Role role = roleService.getRoleById(roleId);
-            if (null != role) {
+            Optional<Role> fetchedRole = roleService.getRoleById(roleId);
+            if (fetchedRole.isPresent()) {
+                Role role = fetchedRole.get();
                 System.out.println(role);
                 System.out.println(role.getStudents());
             } else {
                 System.out.println("No Role Exists");
-                logger.warn("No Role Exists");
+//                logger.warn("No Role Exists");
             }
         } catch (StudentManagementException e) {
             System.err.println(e.getMessage());
-            logger.error(e.getMessage(), e);
+//            logger.error(e.getMessage(), e);
         }
     }
 }
