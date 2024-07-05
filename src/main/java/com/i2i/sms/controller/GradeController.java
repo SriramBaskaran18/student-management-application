@@ -1,34 +1,39 @@
 package com.i2i.sms.controller;
 
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.List;
 
+import com.i2i.sms.dto.GradeDto;
+import com.i2i.sms.dto.ResponseGradeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.i2i.sms.exception.StudentManagementException;
-import com.i2i.sms.model.Grade;
 import com.i2i.sms.service.GradeService;
 
 @RestController
 @RequestMapping("sms/api/v1.0/grades")
 public class GradeController {
-
-    public static Scanner scanner = new Scanner(System.in);
-    //private final Logger logger = LoggerFactory.getLogger(GradeController.class);
+    private final Logger logger = LoggerFactory.getLogger(GradeController.class);
     @Autowired
     private GradeService gradeService;
 
-    @GetMapping("find-all")
-    public void getAllGrades() {
+    @GetMapping
+    public ResponseEntity<?> getAllGrades() {
         try {
-            for (Grade grade : gradeService.getAllGrades()) {
-                displayGrade(grade);
+            List<ResponseGradeDto> grades = gradeService.getAllGrades();
+            if (!grades.isEmpty()) {
+                return ResponseEntity.ok(grades);
+            } else {
+                return new ResponseEntity<>("No student found", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -36,57 +41,39 @@ public class GradeController {
      * retrieves the specific grade with associated students.
      * </p>
      */
-    @GetMapping("find/{id}")
-    public void getGradeById(@PathVariable("id") int gradeId) {
+    @GetMapping("{id}")
+    public ResponseEntity<?> getGradeById(@PathVariable("id") int gradeId) {
         try {
-            //System.out.println("Enter GradeId to Search Specific Grade With Associated Students :");
-            //int gradeId = scanner.nextInt();
-            Optional<Grade> grade = gradeService.getGradeById(gradeId);
-            if (grade.isPresent()) {
-                Grade fetchedGrade = grade.get();
-                displayGrade(fetchedGrade);
+            GradeDto grade = gradeService.getGradeById(gradeId);
+            if (null != grade) {
+                return ResponseEntity.ok(grade);
+            } else {
+                return new ResponseEntity<>("no data found", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
-     * Prompts User to enter the id of the grade to be removed,
-     * it will display a success message if the specified grade removed or
-     * else it will display a warning message with the corresponding grade id.
+     * deletes the corresponding grade with its id.
      * </p>
      */
     @DeleteMapping("delete/{id}")
-    public void deleteGradeById(@PathVariable("id") int gradeId) {
+    public ResponseEntity<?> deleteGradeById(@PathVariable("id") int gradeId) {
         try {
-//            System.out.println("Enter Grade ID to Delete Specific Grade :");
-//            int gradeId = scanner.nextInt();
             boolean isGradeDelete = gradeService.deleteGradeById(gradeId);
             if (isGradeDelete) {
-                System.out.println("**Grade Deleted successfully**");
+                return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
             } else {
-                System.out.println("**Grade with this Id:" + gradeId + " not found to delete**");
-                //logger.warn("Grade with this Id: {} not found to delete", gradeId);
+                logger.warn("Grade with this Id: {} not found to delete", gradeId);
+                return new ResponseEntity<>("no data found to delete",HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-//            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>
-     * Display the grade data.
-     * </p>
-     *
-     * @param grade Grade will have Standard, Section and gradeId.
-     */
-    public void displayGrade(Grade grade) {
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
-        System.out.println(grade);
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

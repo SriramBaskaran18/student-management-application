@@ -1,6 +1,8 @@
 package com.i2i.sms.service;
 
+import com.i2i.sms.dto.ResponseRoleDto;
 import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.mapper.RoleMapper;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +12,10 @@ import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
-
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private RoleMapper roleMapper;
 
     /**
      * <p>
@@ -47,9 +50,14 @@ public class RoleServiceImpl implements RoleService {
      * @return Role containing data from the database or null.
      * @throws StudentManagementException if an error occurs while retrieving the role by its id.
      */
-    public Optional<Role> getRoleById(int roleId) throws StudentManagementException {
+    public ResponseRoleDto getRoleById(int roleId) throws StudentManagementException {
         try {
-            return roleRepository.findById(roleId);
+            Optional<Role> role = roleRepository.findById(roleId);
+            if(role.isPresent()) {
+                return roleMapper.entityToResponseDto(role.get());
+            }else {
+                return null;
+            }
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while fetching role by its id: " + roleId, e);
         }

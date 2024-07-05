@@ -13,6 +13,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -20,6 +23,9 @@ import jakarta.persistence.Table;
  * It includes getter and setter methods for accessing and modifying these attributes.
  * </p>
  */
+@Builder
+@Getter
+@Setter
 @Entity
 @Table(name = "role")
 public class Role {
@@ -38,34 +44,13 @@ public class Role {
     )
     private Set<Student> students;
 
-    public int getId() {
-        return id;
+    public Role() {
     }
 
-    public void setId(int id) {
+    public Role(int id, String name,
+                Set<Student> students) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
         this.students = students;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nRole ").append(id).append(": ").append(name);
-        return stringBuilder.toString();
     }
 }

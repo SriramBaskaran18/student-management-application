@@ -1,0 +1,15 @@
+# Application Settings
+spring.application.name=<APPLICATION_NAME>
+
+# Database Settings
+spring.datasource.url=<DATABASE_URL>
+spring.datasource.username=<DATABASE_USERNAME>
+spring.datasource.password=<DATABASE_PASSWORD>
+spring.datasource.driver-class-name=<DATABASE_DRIVER_CLASS_NAME>
+
+# Hibernate Settings
+spring.jpa.hibernate.ddl-auto=<DDL_AUTO_MODE>
+spring.jpa.database-platform=<DATABASE_PLATFORM>
+
+# Other Settings
+# Add other settings as needed

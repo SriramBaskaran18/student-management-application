@@ -11,6 +11,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * <p>
@@ -18,6 +22,9 @@ import jakarta.persistence.Table;
  * It includes getter and setter methods for accessing and modifying these attributes.
  * </p>
  */
+@Builder
+@Getter
+@Setter
 @Entity
 @Table(name = "grade")
 public class Grade {
@@ -37,49 +44,11 @@ public class Grade {
     public Grade() {
     }
 
-    public Grade(int standard, String section) {
-        this.standard = standard;
-        this.section = section;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public Grade(int id, int standard,
+                 String section, Set<Student> students) {
         this.id = id;
-    }
-
-    public int getStd() {
-        return standard;
-    }
-
-    public void setStd(int standard) {
         this.standard = standard;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
         this.section = section;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
         this.students = students;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Grade Unique Id : ").append(id)
-                .append("\nStudent's Standard : ").append(standard)
-                .append("\nStudent's Section : ").append(section);
-        return stringBuilder.toString();
     }
 }

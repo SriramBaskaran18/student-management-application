@@ -1,25 +1,20 @@
 package com.i2i.sms.controller;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
 
+import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.dto.StudentDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.i2i.sms.common.RoleEnum;
 import com.i2i.sms.exception.StudentManagementException;
-import com.i2i.sms.model.Address;
-import com.i2i.sms.model.Role;
-import com.i2i.sms.model.Student;
 import com.i2i.sms.service.RoleServiceImpl;
 import com.i2i.sms.service.StudentService;
-import com.i2i.sms.utils.DateUtils;
-import com.i2i.sms.utils.StringValidationUtil;
 
 /**
  * <p>
@@ -31,8 +26,7 @@ import com.i2i.sms.utils.StringValidationUtil;
 @RestController
 @RequestMapping("sms/api/v1.0/students")
 public class StudentController {
-    public static Scanner scanner = new Scanner(System.in);
-//    private final Logger logger = LoggerFactory.getLogger(StudentController.class);
+    private final Logger logger = LoggerFactory.getLogger(StudentController.class);
     @Autowired
     public StudentService studentService;
     @Autowired
@@ -40,131 +34,19 @@ public class StudentController {
 
     /**
      * <p>
-     * Gather information from the user and validate like Name contains only Alphabets,
-     * D.O.B in the yyyy-MM-dd format, standard, section and create a student.
+     * get information from the user as dto object and creates a student.
      * </p>
      */
     @PostMapping("create")
-    public void createStudent() {
+    public ResponseEntity<ResponseStudentDto> createStudent(
+            @RequestBody RequestStudentDto requestStudentDto) {
         try {
-            String name;
-            while (true) {
-                System.out.println("Enter Your Name : ");
-                name = scanner.next();
-                if (!StringValidationUtil.isValidString(name)) {
-                    System.out.println("Numbers are not allowed, Entered value is in invalid format");
-                    continue;
-                }
-                break;
-            }
-            String dob;
-            while (true) {
-                System.out.println("Enter Your D.O.B Like yyyy-MM-dd : ");
-                dob = scanner.next();
-                if (!DateUtils.isValidDate(dob)) {
-                    System.out.println("Entered D.O.B is in invalid format");
-                    continue;
-                }
-                break;
-            }
-            LocalDate dateOfBirth = LocalDate.parse(dob);
-            System.out.println("Enter the Standard : ");
-            int std = scanner.nextInt();
-            String section;
-            while (true) {
-                System.out.println("Enter the Section : ");
-                section = scanner.next();
-                if (!StringValidationUtil.isValidString(section)) {
-                    System.out.println("Numbers are not allowed, Entered value is in invalid format");
-                    continue;
-                }
-                break;
-            }
-            System.out.println("Enter Your Address \n");
-            System.out.println("Enter Your Door NO. :");
-            String doorNumber = scanner.next();
-            scanner.nextLine();
-            System.out.println("Enter Your Street :");
-            String street = scanner.nextLine();
-            System.out.println("Enter Your City :");
-            String city = scanner.nextLine();
-            System.out.println("Enter Your State :");
-            String state = scanner.nextLine();
-            System.out.println("Enter Your Zipcode :");
-            int zipcode = scanner.nextInt();
-            scanner.nextLine();
-            System.out.println("Enter Your Mobile Number :");
-            String mobileNumber = scanner.nextLine();
-            Address address = new Address(doorNumber, street, city, state, zipcode, mobileNumber);
-            Set<Role> roles = addRole();
-            Student insertedStudent = studentService.addStudent(name, dateOfBirth, std, section, address, roles);
-            if (null != insertedStudent) {
-                displayStudent(insertedStudent);
-                System.out.println(insertedStudent.getGrade());
-                System.out.println("**Student Data Added to the Database**");
-            } else {
-                System.out.println("Unable to add Student");
-                //logger.warn("Unable to add Student");
-            }
+            return new ResponseEntity<>(studentService.addStudent(requestStudentDto),
+                    HttpStatus.CREATED);
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>
-     * Allow Student to select roles from a predefined list and adds the selected roles to a set.
-     * The student can select multiple roles and the method ensures that
-     * each role is picked only once.
-     * The method continues to prompt for role selection until the user chooses to exit.
-     * </p>
-     *
-     * @return a set of roles selected by the user.
-     */
-    @PostMapping("role")
-    public Set<Role> addRole() {
-        List<Integer> picks = new ArrayList<>();
-        Set<Role> pickedRoles = new HashSet<>();
-        try {
-            while (true) {
-                System.out.println("Choose The Role You Want");
-                System.out.println("Pick 1 For Class Representative");
-                System.out.println("Pick 2 For Board In-charge");
-                System.out.println("Pick 3 For Cabinet In-charge");
-                int pick = scanner.nextInt();
-                if (!picks.contains(pick)) {
-                    switch (pick) {
-                        case 1:
-                            pickedRoles.add(roleServiceImpl.getRoleIfRoleExists(RoleEnum.CLASS_REPRESENTATIVE.getRole()));
-                            break;
-                        case 2:
-                            pickedRoles.add(roleServiceImpl.getRoleIfRoleExists(RoleEnum.BOARD_INCHARGE.getRole()));
-                            break;
-                        case 3:
-                            pickedRoles.add(roleServiceImpl.getRoleIfRoleExists(RoleEnum.CABINET_INCHARGE.getRole()));
-                            break;
-                        default:
-                            System.out.println("\n____Invalid Pick____");
-                    }
-                    picks.add(pick);
-                } else {
-                    System.out.println("You Already Picked That Role");
-                    //logger.warn("You Already Picked That Role");
-                }
-                System.out.println("1--> Continue with another role "
-                        + "\n press any number and Enter--> Exit....");
-                int option = scanner.nextInt();
-                if (option == 1) {
-                    continue;
-                }
-                break;
-            }
-        } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
-        }
-        return pickedRoles;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -172,80 +54,59 @@ public class StudentController {
      * Retrieves All the student details and displays the student information to the user.
      * </p>
      */
-    @GetMapping("view-all")
-    public void getAllStudents() {
+    @GetMapping
+    public ResponseEntity<?> getAllStudents() {
         try {
-            for (Student student : studentService.getAllStudents()) {
-                displayStudent(student);
+            List<StudentDto> students = studentService.getAllStudents();
+            if (!students.isEmpty()) {
+                return ResponseEntity.ok(students);
+            } else {
+                return new ResponseEntity<>("no student found", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
-     * Retrieves the corresponding student details and displays the
-     * student information to the user.
+     * Retrieves the corresponding student details by their id.
      * </p>
      */
     @GetMapping("find/{id}")
-    public void getStudentById(@PathVariable("id") int studentId) {
+    public ResponseEntity<?> getStudentById(@PathVariable("id") int studentId) {
         try {
-            Optional<Student> student = studentService.getStudentById(studentId);
-            if (student.isPresent()) {
-                Student student1 = student.get();
-                displayStudent(student1);
-                System.out.println(student1.getGrade() + "\n");
-                System.out.println(student1.getAddress() + "\n");
+            ResponseStudentDto student = studentService.getStudentById(studentId);
+            if (null != student) {
+                return ResponseEntity.ok(student);
             } else {
-                System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
-                System.out.println("\n**No Student Exists**");
-                System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _");
-                //logger.warn("No Student Exists");
+                return new ResponseEntity<>("No data Found", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
-     * Prompts User to enter the id of the student to be removed,
-     * it will display a success message if the specified student removed or
-     * else it will display a warning message with the corresponding student id.
+     * deletes the corresponding student with their id.
      * </p>
      */
     @DeleteMapping("delete/{id}")
-    public void deleteStudentById(@PathVariable("id") int studentId) {
+    public ResponseEntity<?> deleteStudentById(@PathVariable("id") int studentId) {
         try {
             boolean isStudentDelete = studentService.deleteStudentById(studentId);
             if (isStudentDelete) {
-                System.out.println("**Student Deleted successfully**");
+                return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
             } else {
-                System.out.println("**Student Id:" + studentId + " not found to delete**");
-                //logger.warn("Student Id: {} not found to delete", studentId);
+                logger.warn("Student Id: {} not found to delete", studentId);
+                return new ResponseEntity<>("No student found to delete", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
-            System.err.println(e.getMessage());
-            //logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
-    }
-
-    /**
-     * <p>
-     * Display the student data.
-     * </p>
-     *
-     * @param student Student will have Name, D.O.B in the yyyy-MM-dd format, Age, and Grade.
-     */
-    public void displayStudent(Student student) {
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
-                + " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
-        System.out.println(student);
-        System.out.println("\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
-                + " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n");
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

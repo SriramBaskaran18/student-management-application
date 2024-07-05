@@ -17,7 +17,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import com.i2i.sms.utils.DateUtils;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -25,6 +27,9 @@ import com.i2i.sms.utils.DateUtils;
  * grade, address, and roles. It includes getter and setter methods for accessing and modifying these attributes.
  * </p>
  */
+@Builder
+@Getter
+@Setter
 @Entity
 @Table(name = "student")
 public class Student {
@@ -51,61 +56,17 @@ public class Student {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    public int getId() {
-        return id;
+    public Student() {
     }
 
-    public void setId(int id) {
+    public Student(int id, String name,
+                   LocalDate dob, Grade grade,
+                   Address address, Set<Role> roles) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
         this.dob = dob;
-    }
-
-    public Grade getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Grade grade) {
         this.grade = grade;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nStudentId : ").append(id)
-                .append(", Student Name : ").append(name)
-                .append(", Student D.O.B : ").append(dob)
-                .append(", Student Age : ").append(DateUtils.calculateDateDifference(dob));
-        return stringBuilder.toString();
     }
 }

@@ -1,15 +1,23 @@
 package com.i2i.sms.service;
 
-import java.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.i2i.sms.dto.CreateRoleDto;
+import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.mapper.AddressMapper;
+import com.i2i.sms.mapper.StudentMapper;
+import com.i2i.sms.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.i2i.sms.exception.StudentManagementException;
-import com.i2i.sms.model.Address;
 import com.i2i.sms.model.Grade;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.model.Student;
@@ -23,42 +31,45 @@ import com.i2i.sms.repository.StudentRepository;
 @Service
 public class StudentServiceImpl implements StudentService {
     @Autowired
-    private GradeServiceImpl gradeServiceImpl;
+    private GradeService gradeService;
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private StudentMapper studentMapper;
+    @Autowired
+    private AddressMapper addressMapper;
 
     /**
      * <p>
      * Add student information to the database.
      * </p>
      *
-     * @param name    Name of the student.
-     * @param dob     D.O.B of the student.
-     * @param std     standard of the student to check the grade exists or not.
-     * @param section section of the student to check the grade exists or not.
-     * @param address address of the student.
-     * @param roles   set of roles picked by the student.
+     * @param requestStudentDto requested dto object from the user to add.
      * @return The Added student object or null if any exception occurs.
      * @throws StudentManagementException if an error occurs during student addition.
      */
-    public Student addStudent(String name, LocalDate dob, int std,
-                              String section, Address address,
-                              Set<Role> roles) throws StudentManagementException {
+    public ResponseStudentDto addStudent(RequestStudentDto requestStudentDto) throws StudentManagementException {
         try {
-            Grade grade = gradeServiceImpl.getGradeIfGradeExists(std, section);
+            Grade grade = gradeService.getGradeIfGradeExists(requestStudentDto.getGrade());
             if (null == grade) {
-                grade = gradeServiceImpl.addGrade(std, section);
+                grade = gradeService.addGrade(requestStudentDto.getGrade());
             }
-            Student student = new Student();
-            student.setName(name);
-            student.setDob(dob);
+            Student student = studentMapper.requestDtoToEntity(requestStudentDto);
+            Address address = addressMapper.requestDtoToEntity(requestStudentDto.getAddress());
             student.setAddress(address);
             address.setStudent(student);
             student.setGrade(grade);
+            Set<Role> roles = new HashSet<>();
+            for (CreateRoleDto role : requestStudentDto.getRoles()) {
+                roles.add(roleService.getRoleIfRoleExists(role.getRole()));
+            }
             student.setRoles(roles);
-            return studentRepository.save(student);
+            Student insertedStudent = studentRepository.save(student);
+            return studentMapper.entityToResponseDto(insertedStudent);
         } catch (Exception e) {
-            throw new StudentManagementException("Error occur while inserting student with name: " + name, e);
+            throw new StudentManagementException("Error occur while inserting student with name: " + requestStudentDto.getName(), e);
         }
     }
 
@@ -71,9 +82,14 @@ public class StudentServiceImpl implements StudentService {
      * @return The Student object corresponding to the given id, or null if not found.
      * @throws StudentManagementException if an error occurs while fetching the student.
      */
-    public Optional<Student> getStudentById(int studentId) throws StudentManagementException {
+    public ResponseStudentDto getStudentById(int studentId) throws StudentManagementException {
         try {
-            return studentRepository.findById(studentId);
+            Optional<Student> student = studentRepository.findById(studentId);
+            if(student.isPresent()) {
+                return studentMapper.entityToResponseDto(student.get());
+            }else {
+                return null;
+            }
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while get Student by id: " + studentId, e);
         }
@@ -87,9 +103,13 @@ public class StudentServiceImpl implements StudentService {
      * @return a list of all students in the database.
      * @throws StudentManagementException if an error occurs while fetching the students.
      */
-    public List<Student> getAllStudents() throws StudentManagementException {
+    public List<StudentDto> getAllStudents() throws StudentManagementException {
         try {
-            return studentRepository.findAll();
+            List<StudentDto> students = new ArrayList<>();
+            for (Student student : studentRepository.findAll()) {
+                students.add(studentMapper.entityToStudentDto(student));
+            }
+            return students;
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while get all students", e);
         }
