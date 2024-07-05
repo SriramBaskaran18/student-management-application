@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Builder
 @Getter
 @Setter
-public class CreateRoleDto {
-    private String role;
+public class GradeStudentsResponseDto {
+    private Set<StudentDto> students;
 }

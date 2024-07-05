@@ -1,9 +1,6 @@
 package com.i2i.sms.mapper;
 
-import com.i2i.sms.dto.CreateGradeDto;
-import com.i2i.sms.dto.GradeDto;
-import com.i2i.sms.dto.ResponseGradeDto;
-import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.dto.*;
 import com.i2i.sms.model.Grade;
 import org.springframework.stereotype.Component;
 
@@ -53,5 +50,8 @@ public class GradeMapper {
         return GradeDto.builder().id(grade.getId()).
                 standard(grade.getStandard()).section(grade.getSection())
                 .students(students).build();
+    }
+    public GradeStudentsResponseDto entityToGradeStudentsResponseDto(Set<StudentDto> students){
+        return GradeStudentsResponseDto.builder().students(students).build();
     }
 }

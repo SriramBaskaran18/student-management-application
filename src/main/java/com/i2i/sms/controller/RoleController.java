@@ -15,7 +15,7 @@ import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.RoleService;
 
 @RestController
-@RequestMapping("sms/api/v1.0/roles")
+@RequestMapping("sms/api/v1/roles")
 public class RoleController {
     private final Logger logger = LoggerFactory.getLogger(RoleController.class);
     @Autowired

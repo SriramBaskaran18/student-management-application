@@ -15,7 +15,7 @@ import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.AddressService;
 
 @RestController
-@RequestMapping("sms/api/v1.0/addresses")
+@RequestMapping("sms/api/v1/addresses")
 public class AddressController {
     private final Logger logger = LoggerFactory.getLogger(AddressController.class);
     @Autowired

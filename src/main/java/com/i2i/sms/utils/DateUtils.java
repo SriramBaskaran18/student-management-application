@@ -17,8 +17,7 @@ public final class DateUtils {
        **/
     public static int calculateDateDifference(LocalDate date) {
         LocalDate currentDate = LocalDate.now();
-        Period dateDifference = Period.between(date, currentDate);
-        return dateDifference.getYears();
+        return Period.between(date, currentDate).getYears();
     }
  
     /**
@@ -27,12 +26,11 @@ public final class DateUtils {
      * </p>
      * @param date 
      *          The date to validate.
-     * @return True if the date is valid and it is in yyyy-MM-dd format, false otherwise.
+     * @return True if the date is valid, and it is in yyyy-MM-dd format, false otherwise.
      */
-    public static boolean isValidDate(String date) {
+    public static boolean isValidDate(LocalDate date) {
         try {
-            LocalDate parsedDate = LocalDate.parse(date);
-            return true;
+            return LocalDate.now().isAfter(date);
         } catch (DateTimeParseException e) {
             return false;
         }

@@ -5,6 +5,8 @@ import java.util.List;
 import com.i2i.sms.dto.RequestStudentDto;
 import com.i2i.sms.dto.ResponseStudentDto;
 import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.utils.DateUtils;
+import com.i2i.sms.utils.StringValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.i2i.sms.exception.StudentManagementException;
-import com.i2i.sms.service.RoleServiceImpl;
 import com.i2i.sms.service.StudentService;
 
 /**
@@ -24,25 +25,46 @@ import com.i2i.sms.service.StudentService;
  * </p>
  */
 @RestController
-@RequestMapping("sms/api/v1.0/students")
+@RequestMapping("sms/api/v1/students")
 public class StudentController {
     private final Logger logger = LoggerFactory.getLogger(StudentController.class);
     @Autowired
     public StudentService studentService;
-    @Autowired
-    public RoleServiceImpl roleServiceImpl;
 
     /**
      * <p>
      * get information from the user as dto object and creates a student.
      * </p>
      */
-    @PostMapping("create")
-    public ResponseEntity<ResponseStudentDto> createStudent(
+    @PostMapping
+    public ResponseEntity<?> createStudent(
             @RequestBody RequestStudentDto requestStudentDto) {
         try {
+            if (!StringValidationUtil.isValidString(requestStudentDto.getName())) {
+                return new ResponseEntity<>("Student name should be in a-z or" +
+                        " A-Z format", HttpStatus.BAD_REQUEST);
+            }
+            if (!DateUtils.isValidDate(requestStudentDto.getDob())) {
+                return new ResponseEntity<>("Could not process the given date" +
+                        " is future date", HttpStatus.BAD_REQUEST);
+            }
+            if (!StringValidationUtil.isValidString(requestStudentDto.getGrade().getSection())
+                    && requestStudentDto.getGrade().getSection().length() != 1) {
+                return new ResponseEntity<>("Could not process the given section is either" +
+                        " not a string or more than one character", HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(studentService.addStudent(requestStudentDto),
                     HttpStatus.CREATED);
+        } catch (StudentManagementException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateStudent(@PathVariable("id") int studentId, @RequestBody RequestStudentDto requestStudentDto) {
+        try {
+            return new ResponseEntity<>(studentService.updateStudent(studentId, requestStudentDto), HttpStatus.OK);
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
         }
@@ -74,7 +96,7 @@ public class StudentController {
      * Retrieves the corresponding student details by their id.
      * </p>
      */
-    @GetMapping("find/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") int studentId) {
         try {
             ResponseStudentDto student = studentService.getStudentById(studentId);
@@ -94,7 +116,7 @@ public class StudentController {
      * deletes the corresponding student with their id.
      * </p>
      */
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<?> deleteStudentById(@PathVariable("id") int studentId) {
         try {
             boolean isStudentDelete = studentService.deleteStudentById(studentId);

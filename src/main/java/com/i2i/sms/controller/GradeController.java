@@ -3,6 +3,7 @@ package com.i2i.sms.controller;
 import java.util.List;
 
 import com.i2i.sms.dto.GradeDto;
+import com.i2i.sms.dto.GradeStudentsResponseDto;
 import com.i2i.sms.dto.ResponseGradeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.GradeService;
 
 @RestController
-@RequestMapping("sms/api/v1.0/grades")
+@RequestMapping("sms/api/v1/grades")
 public class GradeController {
     private final Logger logger = LoggerFactory.getLogger(GradeController.class);
     @Autowired
@@ -61,15 +62,35 @@ public class GradeController {
      * deletes the corresponding grade with its id.
      * </p>
      */
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<?> deleteGradeById(@PathVariable("id") int gradeId) {
         try {
             boolean isGradeDelete = gradeService.deleteGradeById(gradeId);
             if (isGradeDelete) {
-                return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
+                return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
             } else {
                 logger.warn("Grade with this Id: {} not found to delete", gradeId);
-                return new ResponseEntity<>("no data found to delete",HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("no data found to delete", HttpStatus.NOT_FOUND);
+            }
+        } catch (StudentManagementException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * <p>
+     * Fetches a list of students associated with a specified grade.
+     * </p>
+     */
+    @GetMapping("{id}/students")
+    public ResponseEntity<?> getStudentsByGrade(@PathVariable("id") int gradeId) {
+        try {
+            GradeStudentsResponseDto students = gradeService.getStudentsByGrade(gradeId);
+            if (null != students) {
+                return new ResponseEntity<>(students, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("No students found with the gradeId:" + gradeId, HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);

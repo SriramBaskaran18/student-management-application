@@ -42,15 +42,10 @@ public class StudentServiceImpl implements StudentService {
     private AddressMapper addressMapper;
 
     /**
-     * <p>
-     * Add student information to the database.
-     * </p>
-     *
-     * @param requestStudentDto requested dto object from the user to add.
-     * @return The Added student object or null if any exception occurs.
-     * @throws StudentManagementException if an error occurs during student addition.
+     * {@inheritDoc}
      */
-    public ResponseStudentDto addStudent(RequestStudentDto requestStudentDto) throws StudentManagementException {
+    public ResponseStudentDto addStudent(RequestStudentDto requestStudentDto)
+            throws StudentManagementException {
         try {
             Grade grade = gradeService.getGradeIfGradeExists(requestStudentDto.getGrade());
             if (null == grade) {
@@ -69,39 +64,56 @@ public class StudentServiceImpl implements StudentService {
             Student insertedStudent = studentRepository.save(student);
             return studentMapper.entityToResponseDto(insertedStudent);
         } catch (Exception e) {
-            throw new StudentManagementException("Error occur while inserting student with name: " + requestStudentDto.getName(), e);
+            throw new StudentManagementException("Error occur while inserting student" +
+                    " with name: " + requestStudentDto.getName(), e);
         }
     }
 
     /**
-     * <p>
-     * Searches for a student in the database by their Id.
-     * </p>
-     *
-     * @param studentId ID of the student to search for.
-     * @return The Student object corresponding to the given id, or null if not found.
-     * @throws StudentManagementException if an error occurs while fetching the student.
+     * {@inheritDoc}
+     */
+    public ResponseStudentDto updateStudent(int studentId, RequestStudentDto requestStudentDto)
+            throws StudentManagementException {
+        try {
+            Optional<Student> student = studentRepository.findById(studentId);
+            if (student.isPresent()) {
+                student.get().setName(requestStudentDto.getName());
+                student.get().setDob(requestStudentDto.getDob());
+                Address address = addressMapper.requestDtoToEntity(requestStudentDto.getAddress());
+                address.setId(student.get().getId());
+                student.get().setAddress(address);
+                address.setStudent(student.get());
+                Student studentEntity = studentRepository.save(student.get());
+                return studentMapper.entityToResponseDto(studentEntity);
+            }
+        } catch (Exception e) {
+            throw new StudentManagementException("Error Occurred While " +
+                    "updating student with id:" + studentId, e);
+        }
+
+        return null;
+    }
+
+
+    /**
+     * {@inheritDoc}
      */
     public ResponseStudentDto getStudentById(int studentId) throws StudentManagementException {
         try {
             Optional<Student> student = studentRepository.findById(studentId);
-            if(student.isPresent()) {
+            if (student.isPresent()) {
                 return studentMapper.entityToResponseDto(student.get());
-            }else {
+            } else {
                 return null;
             }
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while get Student by id: " + studentId, e);
+            throw new StudentManagementException("Error occurred while get Student by id: " +
+                    studentId, e);
         }
     }
 
     /**
-     * <p>
-     * Retrieves a list of all students from the database.
-     * </p>
-     *
-     * @return a list of all students in the database.
-     * @throws StudentManagementException if an error occurs while fetching the students.
+     * {@inheritDoc}
      */
     public List<StudentDto> getAllStudents() throws StudentManagementException {
         try {
@@ -116,13 +128,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     /**
-     * <p>
-     * Deletes a student from the database by their ID.
-     * </p>
-     *
-     * @param studentId the ID of the student to be deleted.
-     * @return true if the student was found and deleted, false if the student was not found.
-     * @throws StudentManagementException if an error occurs while deleting the student.
+     * {@inheritDoc}
      */
     public boolean deleteStudentById(int studentId) throws StudentManagementException {
         try {

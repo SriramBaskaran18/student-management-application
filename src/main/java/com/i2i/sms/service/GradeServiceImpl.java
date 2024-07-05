@@ -2,10 +2,7 @@ package com.i2i.sms.service;
 
 import java.util.*;
 
-import com.i2i.sms.dto.CreateGradeDto;
-import com.i2i.sms.dto.GradeDto;
-import com.i2i.sms.dto.ResponseGradeDto;
-import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.dto.*;
 import com.i2i.sms.mapper.GradeMapper;
 import com.i2i.sms.mapper.StudentMapper;
 import com.i2i.sms.model.Student;
@@ -27,14 +24,7 @@ public class GradeServiceImpl implements GradeService {
     private StudentMapper studentMapper;
 
     /**
-     * <p>
-     * Checks if a grade exists for a given standard and section.
-     * </p>
-     *
-     * @param gradeDto grade object with standard and section to search for.
-     * @return the grade if the grade found (or) null object if no grade found.
-     * @throws StudentManagementException if a database access error occurs while check the grade
-     *                                    exists or not.
+     * {@inheritDoc}
      */
     public Grade getGradeIfGradeExists(CreateGradeDto gradeDto) throws StudentManagementException {
         try {
@@ -45,13 +35,7 @@ public class GradeServiceImpl implements GradeService {
     }
 
     /**
-     * <p>
-     * Adds a new Grade object to the database.
-     * </p>
-     *
-     * @param  gradeDto grade to be inserted.
-     * @return The inserted grade record or null.
-     * @throws StudentManagementException if an error occurs while inserting the grade.
+     * {@inheritDoc}
      */
     public Grade addGrade(CreateGradeDto gradeDto) throws StudentManagementException {
         try {
@@ -65,13 +49,7 @@ public class GradeServiceImpl implements GradeService {
     }
 
     /**
-     * <p>
-     * Retrieves a Grade object from the database based on the provided grade ID.
-     * </p>
-     *
-     * @param gradeId the ID of the Grade to be retrieved.
-     * @return the Grade object with the specified ID if it presents otherwise null.
-     * @throws StudentManagementException if an error occurs while fetching the grade by its id.
+     * {@inheritDoc}
      */
     public GradeDto getGradeById(int gradeId) throws StudentManagementException {
         try {
@@ -82,7 +60,7 @@ public class GradeServiceImpl implements GradeService {
                     students.add(studentMapper.entityToStudentDto(student));
                 }
                 return gradeMapper.entityToGradeDto(grade.get(), students);
-            }else{
+            } else {
                 return null;
             }
         } catch (Exception e) {
@@ -91,13 +69,22 @@ public class GradeServiceImpl implements GradeService {
     }
 
     /**
-     * <p>
-     * Deletes a Grade from the database based on its ID.
-     * </p>
-     *
-     * @param gradeId the ID of the Grade to be deleted.
-     * @return true if the Grade was successfully deleted,false otherwise (if the Grade not found).
-     * @throws StudentManagementException if an error occurs while deleting the Grade by its id.
+     * {@inheritDoc}
+     */
+    public List<ResponseGradeDto> getAllGrades() throws StudentManagementException {
+        try {
+            List<ResponseGradeDto> grades = new ArrayList<>();
+            for (Grade grade : gradeRepository.findAll()) {
+                grades.add(gradeMapper.entityToResponseDto(grade));
+            }
+            return grades;
+        } catch (Exception e) {
+            throw new StudentManagementException("Error occurred while fetching all students", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public boolean deleteGradeById(int gradeId) throws StudentManagementException {
         try {
@@ -112,22 +99,22 @@ public class GradeServiceImpl implements GradeService {
     }
 
     /**
-     * <p>
-     * Retrieves all grade data from the database.
-     * </p>
-     *
-     * @return List of Grade objects containing data from the database.
-     * @throws StudentManagementException if an error occurs while fetching all grades.
+     * {@inheritDoc}
      */
-    public List<ResponseGradeDto> getAllGrades() throws StudentManagementException {
+    public GradeStudentsResponseDto getStudentsByGrade(int gradeId) throws StudentManagementException {
         try {
-            List<ResponseGradeDto> grades = new ArrayList<>();
-            for (Grade grade : gradeRepository.findAll()) {
-                grades.add(gradeMapper.entityToResponseDto(grade));
+            Optional<Grade> grade = gradeRepository.findById(gradeId);
+            if (grade.isPresent()) {
+                Set<StudentDto> students = new HashSet<>();
+                for (Student student : grade.get().getStudents()) {
+                    students.add(studentMapper.entityToStudentDto(student));
+                }
+                return gradeMapper.entityToGradeStudentsResponseDto(students);
+            }else {
+                return null;
             }
-            return grades;
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while fetching all students", e);
+            throw new StudentManagementException("Error occurred while fetching students with grade id:" + gradeId, e);
         }
     }
 }
