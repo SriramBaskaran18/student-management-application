@@ -16,6 +16,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 /**
  * <p>
  * The Address class represents an address entity with attributes such as id, door number,
@@ -30,8 +32,8 @@ import lombok.Setter;
 @Table(name = "address")
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "door_number")
     private String doorNumber;
@@ -55,7 +57,7 @@ public class Address {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    public Address(int id, String doorNumber,
+    public Address(UUID id, String doorNumber,
                    String street, String city,
                    String state, int zipcode,
                    String mobileNumber, Student student) {

@@ -11,9 +11,7 @@ import com.i2i.sms.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -37,18 +35,19 @@ public class RoleServiceImpl implements RoleService {
             }
             return role;
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while checking role exists or not with role name :" + roleName, e);
+            throw new StudentManagementException("Error occurred while checking" +
+                    " role exists or not with role name :" + roleName, e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public ResponseRoleDto getRoleById(int roleId) throws StudentManagementException {
+    public ResponseRoleDto getRoleById(UUID roleId) throws StudentManagementException {
         try {
             Optional<Role> role = roleRepository.findById(roleId);
             if (role.isPresent()) {
-                Set<StudentDto> students = new HashSet<>();
+                List<StudentDto> students = new ArrayList<>();
                 for (Student student : role.get().getStudents()) {
                     students.add(studentMapper.entityToStudentDto(student));
                 }
@@ -57,7 +56,29 @@ public class RoleServiceImpl implements RoleService {
                 return null;
             }
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while fetching role by its id: " + roleId, e);
+            throw new StudentManagementException("Error occurred while" +
+                    "fetching role by its id: " + roleId, e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<StudentDto> getStudentsByRole(UUID roleId) throws StudentManagementException {
+        try {
+            Optional<Role> role = roleRepository.findById(roleId);
+            if (role.isPresent()) {
+                List<StudentDto> students = new ArrayList<>();
+                for (Student student : role.get().getStudents()) {
+                    students.add(studentMapper.entityToStudentDto(student));
+                }
+                return students;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new StudentManagementException("Error Occurred while fetching" +
+                    " corresponding students of the role with its id: " + roleId, e);
         }
     }
 }

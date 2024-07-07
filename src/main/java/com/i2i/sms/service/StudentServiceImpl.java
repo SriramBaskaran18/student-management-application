@@ -1,16 +1,9 @@
 package com.i2i.sms.service;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import com.i2i.sms.dto.CreateRoleDto;
-import com.i2i.sms.dto.StudentDto;
-import com.i2i.sms.dto.RequestStudentDto;
-import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.dto.*;
 import com.i2i.sms.mapper.AddressMapper;
 import com.i2i.sms.mapper.StudentMapper;
 import com.i2i.sms.model.Address;
@@ -56,7 +49,7 @@ public class StudentServiceImpl implements StudentService {
             student.setAddress(address);
             address.setStudent(student);
             student.setGrade(grade);
-            Set<Role> roles = new HashSet<>();
+            List<Role> roles =new ArrayList<>();
             for (CreateRoleDto role : requestStudentDto.getRoles()) {
                 roles.add(roleService.getRoleIfRoleExists(role.getRole()));
             }
@@ -72,14 +65,14 @@ public class StudentServiceImpl implements StudentService {
     /**
      * {@inheritDoc}
      */
-    public ResponseStudentDto updateStudent(int studentId, RequestStudentDto requestStudentDto)
+    public ResponseStudentDto updateStudent(UUID studentId, RequestUpdateStudentDto requestUpdateStudentDto)
             throws StudentManagementException {
         try {
             Optional<Student> student = studentRepository.findById(studentId);
             if (student.isPresent()) {
-                student.get().setName(requestStudentDto.getName());
-                student.get().setDob(requestStudentDto.getDob());
-                Address address = addressMapper.requestDtoToEntity(requestStudentDto.getAddress());
+                student.get().setName(requestUpdateStudentDto.getName());
+                student.get().setDob(requestUpdateStudentDto.getDob());
+                Address address = addressMapper.requestDtoToEntity(requestUpdateStudentDto.getAddress());
                 address.setId(student.get().getId());
                 student.get().setAddress(address);
                 address.setStudent(student.get());
@@ -98,7 +91,7 @@ public class StudentServiceImpl implements StudentService {
     /**
      * {@inheritDoc}
      */
-    public ResponseStudentDto getStudentById(int studentId) throws StudentManagementException {
+    public ResponseStudentDto getStudentById(UUID studentId) throws StudentManagementException {
         try {
             Optional<Student> student = studentRepository.findById(studentId);
             if (student.isPresent()) {
@@ -130,7 +123,7 @@ public class StudentServiceImpl implements StudentService {
     /**
      * {@inheritDoc}
      */
-    public boolean deleteStudentById(int studentId) throws StudentManagementException {
+    public boolean deleteStudentById(UUID studentId) throws StudentManagementException {
         try {
             Optional<Student> fetchedStudent = studentRepository.findById(studentId);
             if (fetchedStudent.isPresent()) {

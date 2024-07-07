@@ -9,4 +9,11 @@ import lombok.Setter;
 @Setter
 public class CreateRoleDto {
     private String role;
+
+    public CreateRoleDto() {
+    }
+
+    public CreateRoleDto(String role) {
+        this.role = role;
+    }
 }

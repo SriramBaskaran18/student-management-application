@@ -1,6 +1,7 @@
 package com.i2i.sms.model;
 
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,7 +14,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -29,8 +29,8 @@ import lombok.Setter;
 @Table(name = "grade")
 public class Grade {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "standard")
     private int standard;
@@ -39,13 +39,13 @@ public class Grade {
     private String section;
 
     @OneToMany(mappedBy = "grade", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Student> students;
+    private List<Student> students;
 
     public Grade() {
     }
 
-    public Grade(int id, int standard,
-                 String section, Set<Student> students) {
+    public Grade(UUID id, int standard,
+                 String section, List<Student> students) {
         this.id = id;
         this.standard = standard;
         this.section = section;

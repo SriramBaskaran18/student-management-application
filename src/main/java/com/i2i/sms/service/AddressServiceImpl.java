@@ -11,6 +11,7 @@ import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.repository.AddressRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -25,11 +26,12 @@ public class AddressServiceImpl implements AddressService {
     /**
      * {@inheritDoc}
      */
-    public AddressDto getAddressById(int addressId) throws StudentManagementException {
+    public AddressDto getAddressById(UUID addressId) throws StudentManagementException {
         try {
             Optional<Address> address = addressRepository.findById(addressId);
             if(address.isPresent()) {
-                return addressMapper.entityToAddressDto(address.get(), studentMapper.entityToStudentDto(address.get().getStudent()));
+                return addressMapper.entityToAddressDto(address.get(),
+                        studentMapper.entityToStudentDto(address.get().getStudent()));
             }else{
                 return null;
             }

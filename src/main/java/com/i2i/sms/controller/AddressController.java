@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.AddressService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("sms/api/v1/addresses")
 public class AddressController {
@@ -27,7 +29,7 @@ public class AddressController {
      * </p>
      */
     @GetMapping("{id}")
-    public ResponseEntity<?> getAddressById(@PathVariable("id") int addressId) {
+    public ResponseEntity<?> getAddressById(@PathVariable("id") UUID addressId) {
         try {
             AddressDto address = addressService.getAddressById(addressId);
             if (null != address) {

@@ -1,13 +1,11 @@
 package com.i2i.sms.service;
 
-import com.i2i.sms.dto.CreateGradeDto;
-import com.i2i.sms.dto.GradeDto;
-import com.i2i.sms.dto.GradeStudentsResponseDto;
-import com.i2i.sms.dto.ResponseGradeDto;
+import com.i2i.sms.dto.*;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Grade;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface GradeService {
 
@@ -43,7 +41,7 @@ public interface GradeService {
      * @return the Grade object with the specified ID if it presents otherwise null.
      * @throws StudentManagementException if an error occurs while fetching the grade by its id.
      */
-    GradeDto getGradeById(int gradeId) throws StudentManagementException;
+    GradeDto getGradeById(UUID gradeId) throws StudentManagementException;
 
     /**
      * <p>
@@ -64,15 +62,15 @@ public interface GradeService {
      * @return true if the Grade was successfully deleted,false otherwise (if the Grade not found).
      * @throws StudentManagementException if an error occurs while deleting the Grade by its id.
      */
-    boolean deleteGradeById(int gradeId) throws StudentManagementException;
+    boolean deleteGradeById(UUID gradeId) throws StudentManagementException;
 
     /**
      * <p>
      * Fetches a list of students associated with a specified grade.
      * </p>
      * @param gradeId The ID of the grade for which students need to be retrieved.
-     * @return A GradeStudentsResponseDto containing the list of students for the given grade.
+     * @return List of StudentDto containing the list of students for the given grade.
      * @throws StudentManagementException If an error occurs while fetching the students.
      */
-    GradeStudentsResponseDto getStudentsByGrade(int gradeId) throws StudentManagementException;
+    List<StudentDto> getStudentsByGrade(UUID gradeId) throws StudentManagementException;
 }

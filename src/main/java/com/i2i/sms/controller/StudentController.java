@@ -1,8 +1,10 @@
 package com.i2i.sms.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.RequestUpdateStudentDto;
 import com.i2i.sms.dto.ResponseStudentDto;
 import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.utils.DateUtils;
@@ -48,6 +50,11 @@ public class StudentController {
                 return new ResponseEntity<>("Could not process the given date" +
                         " is future date", HttpStatus.BAD_REQUEST);
             }
+            if (requestStudentDto.getGrade().getStandard() < 1 ||
+                    requestStudentDto.getGrade().getStandard() > 12) {
+                return new ResponseEntity<>("Standard must be between" +
+                        " 1 and 12", HttpStatus.BAD_REQUEST);
+            }
             if (!StringValidationUtil.isValidString(requestStudentDto.getGrade().getSection())
                     && requestStudentDto.getGrade().getSection().length() != 1) {
                 return new ResponseEntity<>("Could not process the given section is either" +
@@ -61,10 +68,24 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * update student object with the given information.
+     */
     @PutMapping("{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable("id") int studentId, @RequestBody RequestStudentDto requestStudentDto) {
+    public ResponseEntity<?> updateStudent(
+            @PathVariable("id") UUID studentId,
+            @RequestBody RequestUpdateStudentDto requestUpdateStudentDto) {
         try {
-            return new ResponseEntity<>(studentService.updateStudent(studentId, requestStudentDto), HttpStatus.OK);
+            if (!StringValidationUtil.isValidString(requestUpdateStudentDto.getName())) {
+                return new ResponseEntity<>("Student name should be in a-z or" +
+                        " A-Z format", HttpStatus.BAD_REQUEST);
+            }
+            if (!DateUtils.isValidDate(requestUpdateStudentDto.getDob())) {
+                return new ResponseEntity<>("Could not process the given date" +
+                        " is future date", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(studentService.updateStudent(studentId,
+                    requestUpdateStudentDto), HttpStatus.OK);
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
         }
@@ -97,7 +118,7 @@ public class StudentController {
      * </p>
      */
     @GetMapping("{id}")
-    public ResponseEntity<?> getStudentById(@PathVariable("id") int studentId) {
+    public ResponseEntity<?> getStudentById(@PathVariable("id") UUID studentId) {
         try {
             ResponseStudentDto student = studentService.getStudentById(studentId);
             if (null != student) {
@@ -117,7 +138,7 @@ public class StudentController {
      * </p>
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteStudentById(@PathVariable("id") int studentId) {
+    public ResponseEntity<?> deleteStudentById(@PathVariable("id") UUID studentId) {
         try {
             boolean isStudentDelete = studentService.deleteStudentById(studentId);
             if (isStudentDelete) {

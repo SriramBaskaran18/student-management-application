@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.RoleService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("sms/api/v1/roles")
 public class RoleController {
@@ -27,7 +29,7 @@ public class RoleController {
      * </p>
      */
     @GetMapping("{id}")
-    public ResponseEntity<?> getRoleById(@PathVariable("id") int roleId) {
+    public ResponseEntity<?> getRoleById(@PathVariable("id") UUID roleId) {
         try {
             ResponseRoleDto role = roleService.getRoleById(roleId);
             if (null != role) {
@@ -36,6 +38,16 @@ public class RoleController {
                 logger.warn("No Role Exists");
                 return new ResponseEntity<>("no role found", HttpStatus.NOT_FOUND);
             }
+        } catch (StudentManagementException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("{id}/students")
+    public ResponseEntity<?> getStudentsByRole(@PathVariable("id") UUID roleId) {
+        try {
+            return new ResponseEntity<>(roleService.getStudentsByRole(roleId), HttpStatus.OK);
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
         }

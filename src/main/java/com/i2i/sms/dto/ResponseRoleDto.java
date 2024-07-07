@@ -4,13 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 @Builder
 @Getter
 @Setter
 public class ResponseRoleDto {
-    private int id;
+    private UUID id;
     private String role;
-    private Set<StudentDto> students;
+    private List<StudentDto> students;
 }

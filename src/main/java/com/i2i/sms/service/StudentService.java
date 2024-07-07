@@ -1,11 +1,13 @@
 package com.i2i.sms.service;
 
 import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.RequestUpdateStudentDto;
 import com.i2i.sms.dto.ResponseStudentDto;
 import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.exception.StudentManagementException;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StudentService {
 
@@ -20,7 +22,16 @@ public interface StudentService {
      */
     ResponseStudentDto addStudent(RequestStudentDto requestStudentDto) throws StudentManagementException;
 
-    ResponseStudentDto updateStudent(int studentId, RequestStudentDto requestStudentDto) throws StudentManagementException;
+    /**
+     * <p>
+     * update student information in the database by their id with the requested values.
+     * </p>
+     * @param studentId id of the student to update for.
+     * @param requestUpdateStudentDto  requested dto object contains information to update for
+     * @return The updated student object or null if any exception occurs.
+     * @throws StudentManagementException if an error occurs during student addition.
+     */
+    ResponseStudentDto updateStudent(UUID studentId, RequestUpdateStudentDto requestUpdateStudentDto) throws StudentManagementException;
 
     /**
      * <p>
@@ -31,7 +42,7 @@ public interface StudentService {
      * @return The Student object corresponding to the given id, or null if not found.
      * @throws StudentManagementException if an error occurs while fetching the student.
      */
-    ResponseStudentDto getStudentById(int studentId) throws StudentManagementException;
+    ResponseStudentDto getStudentById(UUID studentId) throws StudentManagementException;
 
     /**
      * <p>
@@ -52,6 +63,6 @@ public interface StudentService {
      * @return true if the student was found and deleted, false if the student was not found.
      * @throws StudentManagementException if an error occurs while deleting the student.
      */
-    boolean deleteStudentById(int studentId) throws StudentManagementException;
+    boolean deleteStudentById(UUID studentId) throws StudentManagementException;
 
 }

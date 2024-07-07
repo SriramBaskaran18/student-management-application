@@ -10,8 +10,8 @@ import com.i2i.sms.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component
@@ -35,7 +35,7 @@ public class StudentMapper {
      * @return a ResponseStudentDto object with the mapped data
      */
     public ResponseStudentDto entityToResponseDto(Student student) {
-        Set<CreateRoleDto> roles = new HashSet<>();
+        List<CreateRoleDto> roles = new ArrayList<>();
         for (Role role : student.getRoles()) {
             roles.add(roleMapper.entityToRoleDto(role));
         }

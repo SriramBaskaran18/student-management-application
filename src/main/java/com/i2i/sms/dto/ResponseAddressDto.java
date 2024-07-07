@@ -4,11 +4,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
 public class ResponseAddressDto {
-    private int id;
+    private UUID id;
     private String doorNumber;
     private String street;
     private String city;

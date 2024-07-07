@@ -1,9 +1,11 @@
 package com.i2i.sms.controller;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import com.i2i.sms.dto.GradeDto;
-import com.i2i.sms.dto.GradeStudentsResponseDto;
+import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.dto.ResponseGradeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,7 @@ public class GradeController {
      * </p>
      */
     @GetMapping("{id}")
-    public ResponseEntity<?> getGradeById(@PathVariable("id") int gradeId) {
+    public ResponseEntity<?> getGradeById(@PathVariable("id") UUID gradeId) {
         try {
             GradeDto grade = gradeService.getGradeById(gradeId);
             if (null != grade) {
@@ -63,7 +65,7 @@ public class GradeController {
      * </p>
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteGradeById(@PathVariable("id") int gradeId) {
+    public ResponseEntity<?> deleteGradeById(@PathVariable("id") UUID gradeId) {
         try {
             boolean isGradeDelete = gradeService.deleteGradeById(gradeId);
             if (isGradeDelete) {
@@ -84,9 +86,9 @@ public class GradeController {
      * </p>
      */
     @GetMapping("{id}/students")
-    public ResponseEntity<?> getStudentsByGrade(@PathVariable("id") int gradeId) {
+    public ResponseEntity<?> getStudentsByGrade(@PathVariable("id") UUID gradeId) {
         try {
-            GradeStudentsResponseDto students = gradeService.getStudentsByGrade(gradeId);
+            List<StudentDto> students = gradeService.getStudentsByGrade(gradeId);
             if (null != students) {
                 return new ResponseEntity<>(students, HttpStatus.OK);
             } else {

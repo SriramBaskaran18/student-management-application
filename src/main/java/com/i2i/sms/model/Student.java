@@ -1,7 +1,8 @@
 package com.i2i.sms.model;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -34,8 +35,8 @@ import lombok.Setter;
 @Table(name = "student")
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "student_name", nullable = false)
     private String name;
@@ -54,14 +55,14 @@ public class Student {
     @JoinTable(name = "student_role",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    private List<Role> roles;
 
     public Student() {
     }
 
-    public Student(int id, String name,
+    public Student(UUID id, String name,
                    LocalDate dob, Grade grade,
-                   Address address, Set<Role> roles) {
+                   Address address, List<Role> roles) {
         this.id = id;
         this.name = name;
         this.dob = dob;

@@ -6,7 +6,7 @@ import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.model.Role;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class RoleMapper {
@@ -22,7 +22,7 @@ public class RoleMapper {
      * @param role the role entity to be mapped
      * @return a ResponseRoleDto object with the mapped data
      */
-    public ResponseRoleDto entityToResponseDto(Role role, Set<StudentDto> students) {
+    public ResponseRoleDto entityToResponseDto(Role role, List<StudentDto> students) {
         return ResponseRoleDto.builder().id(role.getId()).
                 role(role.getName()).
                 students(students).build();

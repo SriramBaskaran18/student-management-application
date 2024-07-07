@@ -4,14 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 
 @Builder
 @Setter
 @Getter
 public class GradeDto {
-    private int id;
+    private UUID id;
     private int standard;
     private String section;
-    private Set<StudentDto> students;
+    private List<StudentDto> students;
 }

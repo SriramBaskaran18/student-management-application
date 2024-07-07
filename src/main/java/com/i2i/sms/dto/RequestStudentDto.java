@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,5 +15,5 @@ public class RequestStudentDto {
     private LocalDate dob;
     private CreateGradeDto grade;
     private CreateAddressDto address;
-    private Set<CreateRoleDto> roles;
+    private List<CreateRoleDto> roles;
 }

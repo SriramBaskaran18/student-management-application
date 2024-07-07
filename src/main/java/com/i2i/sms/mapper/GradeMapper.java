@@ -4,7 +4,7 @@ import com.i2i.sms.dto.*;
 import com.i2i.sms.model.Grade;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class GradeMapper {
@@ -46,12 +46,9 @@ public class GradeMapper {
      * @param students the corresponding students of the grade to be mapped.
      * @return a GradeDto object with the mapped data
      */
-    public GradeDto entityToGradeDto(Grade grade,Set<StudentDto> students) {
+    public GradeDto entityToGradeDto(Grade grade, List<StudentDto> students) {
         return GradeDto.builder().id(grade.getId()).
                 standard(grade.getStandard()).section(grade.getSection())
                 .students(students).build();
-    }
-    public GradeStudentsResponseDto entityToGradeStudentsResponseDto(Set<StudentDto> students){
-        return GradeStudentsResponseDto.builder().students(students).build();
     }
 }

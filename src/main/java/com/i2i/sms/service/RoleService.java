@@ -1,8 +1,12 @@
 package com.i2i.sms.service;
 
 import com.i2i.sms.dto.ResponseRoleDto;
+import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.model.Role;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface RoleService {
 
@@ -27,5 +31,15 @@ public interface RoleService {
      * @return Role containing data from the database or null.
      * @throws StudentManagementException if an error occurs while retrieving the role by its id.
      */
-    ResponseRoleDto getRoleById(int roleId) throws StudentManagementException;
+    ResponseRoleDto getRoleById(UUID roleId) throws StudentManagementException;
+
+    /**
+     * <p>
+     * Fetches a list of students associated with a specified role.
+     * </p>
+     * @param roleId The ID of the role for which students need to be retrieved.
+     * @return set of studentDto containing the list of students for the given grade.
+     * @throws StudentManagementException If an error occurs while fetching the students.
+     */
+    List<StudentDto> getStudentsByRole(UUID roleId) throws StudentManagementException;
 }

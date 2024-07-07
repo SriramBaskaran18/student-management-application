@@ -28,7 +28,8 @@ public class GradeServiceImpl implements GradeService {
      */
     public Grade getGradeIfGradeExists(CreateGradeDto gradeDto) throws StudentManagementException {
         try {
-            return gradeRepository.findByStandardAndSection(gradeDto.getStandard(), gradeDto.getSection());
+            return gradeRepository.findByStandardAndSection(gradeDto.getStandard(),
+                    gradeDto.getSection());
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while checking isGrade exists", e);
         }
@@ -51,11 +52,11 @@ public class GradeServiceImpl implements GradeService {
     /**
      * {@inheritDoc}
      */
-    public GradeDto getGradeById(int gradeId) throws StudentManagementException {
+    public GradeDto getGradeById(UUID gradeId) throws StudentManagementException {
         try {
             Optional<Grade> grade = gradeRepository.findById(gradeId);
             if (grade.isPresent()) {
-                Set<StudentDto> students = new HashSet<>();
+                List<StudentDto> students = new ArrayList<>();
                 for (Student student : grade.get().getStudents()) {
                     students.add(studentMapper.entityToStudentDto(student));
                 }
@@ -86,7 +87,7 @@ public class GradeServiceImpl implements GradeService {
     /**
      * {@inheritDoc}
      */
-    public boolean deleteGradeById(int gradeId) throws StudentManagementException {
+    public boolean deleteGradeById(UUID gradeId) throws StudentManagementException {
         try {
             boolean isAvailable = gradeRepository.existsById(gradeId);
             if (isAvailable) {
@@ -101,15 +102,15 @@ public class GradeServiceImpl implements GradeService {
     /**
      * {@inheritDoc}
      */
-    public GradeStudentsResponseDto getStudentsByGrade(int gradeId) throws StudentManagementException {
+    public List<StudentDto> getStudentsByGrade(UUID gradeId) throws StudentManagementException {
         try {
             Optional<Grade> grade = gradeRepository.findById(gradeId);
             if (grade.isPresent()) {
-                Set<StudentDto> students = new HashSet<>();
+                List<StudentDto> students = new ArrayList<>();
                 for (Student student : grade.get().getStudents()) {
                     students.add(studentMapper.entityToStudentDto(student));
                 }
-                return gradeMapper.entityToGradeStudentsResponseDto(students);
+                return students;
             }else {
                 return null;
             }
