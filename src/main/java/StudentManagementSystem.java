@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.i2i.sms.repository")
 @EntityScan(basePackages = "com.i2i.sms.model")
 public class StudentManagementSystem {
-        public static void main(String[] args) {
-            SpringApplication.run(StudentManagementSystem.class, args);
-        }
+    public static void main(String[] args) {
+        SpringApplication.run(StudentManagementSystem.class, args);
+    }
 }

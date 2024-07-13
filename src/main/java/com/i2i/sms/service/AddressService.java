@@ -1,9 +1,10 @@
 package com.i2i.sms.service;
 
+import java.util.UUID;
+
 import com.i2i.sms.dto.AddressDto;
 import com.i2i.sms.exception.StudentManagementException;
 
-import java.util.UUID;
 
 public interface AddressService {
 
@@ -17,5 +18,5 @@ public interface AddressService {
      * @return Address containing data from the database or null.
      * @throws StudentManagementException if an error occurs while retrieving the address by its id.
      */
-    AddressDto getAddressById(UUID addressId) throws StudentManagementException;
+    AddressDto getAddressById(UUID addressId);
 }

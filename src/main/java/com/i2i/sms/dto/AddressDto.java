@@ -6,6 +6,11 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * This class is responsible for managing the address details that contains
+ * address id, doorNumber, street, city, state, zipcode, mobileNumber,
+ * student{@link StudentDto}.
+ */
 @Builder
 @Getter
 @Setter

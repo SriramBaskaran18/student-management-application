@@ -1,10 +1,15 @@
 package com.i2i.sms.mapper;
 
-import com.i2i.sms.dto.*;
-import com.i2i.sms.model.Grade;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.i2i.sms.dto.RequestGradeDto;
+import com.i2i.sms.dto.GradeDto;
+import com.i2i.sms.dto.ResponseGradeDto;
+import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.model.Grade;
+
 
 @Component
 public class GradeMapper {
@@ -28,12 +33,12 @@ public class GradeMapper {
      * This method takes a CreateGradeDto entity as input and returns a Grade object
      * with the corresponding data.
      * </p>
-     * @param createGradeDto the createGradeDto entity to be mapped
+     * @param requestGradeDto the createGradeDto entity to be mapped
      * @return a Grade object with the mapped data
      */
-    public Grade requestDtoToEntity(CreateGradeDto createGradeDto) {
-        return Grade.builder().standard(createGradeDto.getStandard()).
-                section(createGradeDto.getSection()).build();
+    public Grade requestDtoToEntity(RequestGradeDto requestGradeDto) {
+        return Grade.builder().standard(requestGradeDto.getStandard()).
+                section(requestGradeDto.getSection()).build();
     }
 
     /**

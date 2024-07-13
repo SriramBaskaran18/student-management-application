@@ -6,7 +6,7 @@ package com.i2i.sms.exception;
  * It extends the standard Java Exception class.
  * </p>
  */
-public class StudentManagementException extends Exception {
+public class StudentManagementException extends RuntimeException {
 
     /**
      * <p>

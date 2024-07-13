@@ -1,6 +1,5 @@
 package com.i2i.sms.model;
 
-import com.i2i.sms.dto.CreateAddressDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import java.util.UUID;
 
@@ -28,6 +25,8 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "address")
 public class Address {
@@ -53,24 +52,7 @@ public class Address {
     @Column(name = "mobile_number")
     private String mobileNumber;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "student_id")
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
-
-    public Address(UUID id, String doorNumber,
-                   String street, String city,
-                   String state, int zipcode,
-                   String mobileNumber, Student student) {
-        this.id = id;
-        this.doorNumber = doorNumber;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.zipcode = zipcode;
-        this.mobileNumber = mobileNumber;
-        this.student = student;
-    }
-
-    public Address() {
-    }
 }

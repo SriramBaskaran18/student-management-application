@@ -1,20 +1,27 @@
 package com.i2i.sms.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import java.util.*;
-
-import com.i2i.sms.dto.*;
-import com.i2i.sms.mapper.AddressMapper;
-import com.i2i.sms.mapper.StudentMapper;
-import com.i2i.sms.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.i2i.sms.dto.RequestRoleDto;
+import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.RequestUpdateStudentDto;
+import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.exception.StudentManagementException;
+import com.i2i.sms.mapper.AddressMapper;
+import com.i2i.sms.mapper.StudentMapper;
+import com.i2i.sms.model.Address;
 import com.i2i.sms.model.Grade;
 import com.i2i.sms.model.Role;
 import com.i2i.sms.model.Student;
 import com.i2i.sms.repository.StudentRepository;
+import org.springframework.util.ObjectUtils;
 
 /**
  * <p>
@@ -34,14 +41,10 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private AddressMapper addressMapper;
 
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseStudentDto addStudent(RequestStudentDto requestStudentDto)
-            throws StudentManagementException {
+    public ResponseStudentDto addStudent(RequestStudentDto requestStudentDto) {
         try {
             Grade grade = gradeService.getGradeIfGradeExists(requestStudentDto.getGrade());
-            if (null == grade) {
+            if (ObjectUtils.isEmpty(grade)) {
                 grade = gradeService.addGrade(requestStudentDto.getGrade());
             }
             Student student = studentMapper.requestDtoToEntity(requestStudentDto);
@@ -49,8 +52,8 @@ public class StudentServiceImpl implements StudentService {
             student.setAddress(address);
             address.setStudent(student);
             student.setGrade(grade);
-            List<Role> roles =new ArrayList<>();
-            for (CreateRoleDto role : requestStudentDto.getRoles()) {
+            List<Role> roles = new ArrayList<>();
+            for (RequestRoleDto role : requestStudentDto.getRoles()) {
                 roles.add(roleService.getRoleIfRoleExists(role.getRole()));
             }
             student.setRoles(roles);
@@ -62,17 +65,15 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseStudentDto updateStudent(UUID studentId, RequestUpdateStudentDto requestUpdateStudentDto)
-            throws StudentManagementException {
+    public ResponseStudentDto updateStudent(
+            UUID studentId, RequestUpdateStudentDto requestUpdateStudentDto) {
         try {
             Optional<Student> student = studentRepository.findById(studentId);
             if (student.isPresent()) {
                 student.get().setName(requestUpdateStudentDto.getName());
                 student.get().setDob(requestUpdateStudentDto.getDob());
-                Address address = addressMapper.requestDtoToEntity(requestUpdateStudentDto.getAddress());
+                Address address = addressMapper.requestDtoToEntity(
+                        requestUpdateStudentDto.getAddress());
                 address.setId(student.get().getId());
                 student.get().setAddress(address);
                 address.setStudent(student.get());
@@ -83,15 +84,10 @@ public class StudentServiceImpl implements StudentService {
             throw new StudentManagementException("Error Occurred While " +
                     "updating student with id:" + studentId, e);
         }
-
         return null;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseStudentDto getStudentById(UUID studentId) throws StudentManagementException {
+    public ResponseStudentDto getStudentById(UUID studentId) {
         try {
             Optional<Student> student = studentRepository.findById(studentId);
             if (student.isPresent()) {
@@ -105,25 +101,21 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<StudentDto> getAllStudents() throws StudentManagementException {
+    public List<StudentDto> getAllStudents() {
+        List<StudentDto> students = new ArrayList<>();
         try {
-            List<StudentDto> students = new ArrayList<>();
-            for (Student student : studentRepository.findAll()) {
-                students.add(studentMapper.entityToStudentDto(student));
+            List<Student> allStudents = studentRepository.findAll();
+            if (!allStudents.isEmpty()) {
+                allStudents.forEach(student ->
+                        students.add(studentMapper.entityToStudentDto(student)));
             }
-            return students;
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while get all students", e);
         }
+        return students;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean deleteStudentById(UUID studentId) throws StudentManagementException {
+    public boolean deleteStudentById(UUID studentId) {
         try {
             Optional<Student> fetchedStudent = studentRepository.findById(studentId);
             if (fetchedStudent.isPresent()) {
@@ -135,7 +127,8 @@ public class StudentServiceImpl implements StudentService {
             }
             return fetchedStudent.isPresent();
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while deleting student by id: " + studentId, e);
+            throw new StudentManagementException("Error occurred while" +
+                    " deleting student by id: " + studentId, e);
         }
     }
 }

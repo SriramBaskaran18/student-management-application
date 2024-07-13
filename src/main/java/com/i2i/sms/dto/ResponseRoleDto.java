@@ -7,6 +7,10 @@ import lombok.Setter;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class is responsible for managing the response student details that contains
+ * role id, role, list of students {@link StudentDto}.
+ */
 @Builder
 @Getter
 @Setter

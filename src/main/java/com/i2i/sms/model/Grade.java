@@ -12,9 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 
 /**
  * <p>
@@ -25,6 +24,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "grade")
 public class Grade {
@@ -40,15 +41,4 @@ public class Grade {
 
     @OneToMany(mappedBy = "grade", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Student> students;
-
-    public Grade() {
-    }
-
-    public Grade(UUID id, int standard,
-                 String section, List<Student> students) {
-        this.id = id;
-        this.standard = standard;
-        this.section = section;
-        this.students = students;
-    }
 }

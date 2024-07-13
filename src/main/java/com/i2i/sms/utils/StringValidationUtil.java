@@ -1,7 +1,5 @@
 package com.i2i.sms.utils;
 
-import java.util.regex.Matcher;
-
 public final class StringValidationUtil {
 
     private StringValidationUtil() {}
@@ -12,7 +10,7 @@ public final class StringValidationUtil {
      * </p>
      * @param str 
      *         The string to be validated.
-     *         whether it may contain alphabets or numnbers. 
+     *         whether it may contain alphabets or numbers.
      * @return True if the string contains only alphabetic characters, false otherwise.
      */
     public static boolean isValidString(String str) {

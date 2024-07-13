@@ -18,9 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * <p>
@@ -31,6 +29,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "student")
 public class Student {
@@ -56,18 +56,4 @@ public class Student {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
-
-    public Student() {
-    }
-
-    public Student(UUID id, String name,
-                   LocalDate dob, Grade grade,
-                   Address address, List<Role> roles) {
-        this.id = id;
-        this.name = name;
-        this.dob = dob;
-        this.grade = grade;
-        this.address = address;
-        this.roles = roles;
-    }
 }

@@ -8,6 +8,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * <p>
+ * This class is responsible for managing the response student details that contains
+ * student's name, date of birth, age, response address{@link ResponseAddressDto},
+ * response grade {@link ResponseGradeDto}, response roles{@link ResponseRoleDto}.
+ * </p>
+ */
 @Getter
 @Setter
 @Builder
@@ -18,5 +25,5 @@ public class ResponseStudentDto {
     private int age;
     private ResponseAddressDto address;
     private ResponseGradeDto grade;
-    private List<CreateRoleDto> roles;
+    private List<RequestRoleDto> roles;
 }

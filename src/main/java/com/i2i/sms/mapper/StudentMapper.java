@@ -1,18 +1,17 @@
 package com.i2i.sms.mapper;
 
-import com.i2i.sms.dto.CreateRoleDto;
-import com.i2i.sms.dto.RequestStudentDto;
-import com.i2i.sms.dto.ResponseStudentDto;
-import com.i2i.sms.dto.StudentDto;
-import com.i2i.sms.model.Role;
-import com.i2i.sms.model.Student;
-import com.i2i.sms.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.i2i.sms.dto.RequestRoleDto;
+import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.model.Student;
+import com.i2i.sms.utils.DateUtils;
 
 @Component
 public class StudentMapper {
@@ -35,12 +34,11 @@ public class StudentMapper {
      * @return a ResponseStudentDto object with the mapped data
      */
     public ResponseStudentDto entityToResponseDto(Student student) {
-        List<CreateRoleDto> roles = new ArrayList<>();
-        for (Role role : student.getRoles()) {
-            roles.add(roleMapper.entityToRoleDto(role));
-        }
+        int age = DateUtils.calculateDateDifference(student.getDob());
+        List<RequestRoleDto> roles = new ArrayList<>();
+        student.getRoles().forEach(role -> roles.add(roleMapper.entityToRoleDto(role)));
         return ResponseStudentDto.builder().id(student.getId()).name(student.getName()).
-                dob(student.getDob()).age(DateUtils.calculateDateDifference(student.getDob())).
+                dob(student.getDob()).age(age).
                 address(addressMapper.entityToResponseDto(student.getAddress())).
                 grade(gradeMapper.entityToResponseDto(student.getGrade())).roles(roles).
                 build();
@@ -72,8 +70,9 @@ public class StudentMapper {
      * @return a StudentDto object with the mapped data
      */
     public StudentDto entityToStudentDto(Student student) {
+        int age = DateUtils.calculateDateDifference(student.getDob());
         return StudentDto.builder().id(student.getId()).name(student.getName()).
-                dob(student.getDob()).age(DateUtils.calculateDateDifference(student.getDob())).
+                dob(student.getDob()).age(age).
                 build();
     }
 }

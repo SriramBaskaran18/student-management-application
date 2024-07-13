@@ -1,17 +1,23 @@
 package com.i2i.sms.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import com.i2i.sms.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.i2i.sms.dto.RequestGradeDto;
+import com.i2i.sms.dto.GradeDto;
+import com.i2i.sms.dto.ResponseGradeDto;
+import com.i2i.sms.dto.StudentDto;
+import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.mapper.GradeMapper;
 import com.i2i.sms.mapper.StudentMapper;
+import com.i2i.sms.model.Grade;
 import com.i2i.sms.model.Student;
 import com.i2i.sms.repository.GradeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.i2i.sms.exception.StudentManagementException;
-import com.i2i.sms.model.Grade;
-import org.springframework.stereotype.Service;
 
 @Service
 public class GradeServiceImpl implements GradeService {
@@ -23,10 +29,7 @@ public class GradeServiceImpl implements GradeService {
     @Autowired
     private StudentMapper studentMapper;
 
-    /**
-     * {@inheritDoc}
-     */
-    public Grade getGradeIfGradeExists(CreateGradeDto gradeDto) throws StudentManagementException {
+    public Grade getGradeIfGradeExists(RequestGradeDto gradeDto) {
         try {
             return gradeRepository.findByStandardAndSection(gradeDto.getStandard(),
                     gradeDto.getSection());
@@ -35,13 +38,9 @@ public class GradeServiceImpl implements GradeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Grade addGrade(CreateGradeDto gradeDto) throws StudentManagementException {
+    public Grade addGrade(RequestGradeDto gradeDto) {
         try {
-            Grade grade = gradeMapper.requestDtoToEntity(gradeDto);
-            return gradeRepository.save(grade);
+            return gradeRepository.save(gradeMapper.requestDtoToEntity(gradeDto));
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while " +
                     "inserting grade with standard: " + gradeDto.getStandard() +
@@ -49,45 +48,35 @@ public class GradeServiceImpl implements GradeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public GradeDto getGradeById(UUID gradeId) throws StudentManagementException {
+    public GradeDto getGradeById(UUID gradeId) {
         try {
             Optional<Grade> grade = gradeRepository.findById(gradeId);
             if (grade.isPresent()) {
                 List<StudentDto> students = new ArrayList<>();
-                for (Student student : grade.get().getStudents()) {
-                    students.add(studentMapper.entityToStudentDto(student));
-                }
+                grade.get().getStudents().forEach(student ->
+                        students.add(studentMapper.entityToStudentDto(student)));
                 return gradeMapper.entityToGradeDto(grade.get(), students);
             } else {
                 return null;
             }
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while fetching grade by its id: " + gradeId, e);
+            throw new StudentManagementException("Error occurred while fetching" +
+                    " grade by its id: " + gradeId, e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<ResponseGradeDto> getAllGrades() throws StudentManagementException {
+    public List<ResponseGradeDto> getAllGrades() {
         try {
             List<ResponseGradeDto> grades = new ArrayList<>();
-            for (Grade grade : gradeRepository.findAll()) {
-                grades.add(gradeMapper.entityToResponseDto(grade));
-            }
+            gradeRepository.findAll().forEach(grade ->
+                    grades.add(gradeMapper.entityToResponseDto(grade)));
             return grades;
         } catch (Exception e) {
             throw new StudentManagementException("Error occurred while fetching all students", e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean deleteGradeById(UUID gradeId) throws StudentManagementException {
+    public boolean deleteGradeById(UUID gradeId) {
         try {
             boolean isAvailable = gradeRepository.existsById(gradeId);
             if (isAvailable) {
@@ -99,10 +88,7 @@ public class GradeServiceImpl implements GradeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<StudentDto> getStudentsByGrade(UUID gradeId) throws StudentManagementException {
+    public List<StudentDto> getStudentsByGrade(UUID gradeId) {
         try {
             Optional<Grade> grade = gradeRepository.findById(gradeId);
             if (grade.isPresent()) {
@@ -115,7 +101,8 @@ public class GradeServiceImpl implements GradeService {
                 return null;
             }
         } catch (Exception e) {
-            throw new StudentManagementException("Error occurred while fetching students with grade id:" + gradeId, e);
+            throw new StudentManagementException("Error occurred while fetching" +
+                    " students with grade id:" + gradeId, e);
         }
     }
 }

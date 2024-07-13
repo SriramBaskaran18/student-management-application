@@ -1,11 +1,12 @@
 package com.i2i.sms.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.i2i.sms.dto.AddressDto;
-import com.i2i.sms.dto.CreateAddressDto;
+import com.i2i.sms.dto.RequestAddressDto;
 import com.i2i.sms.dto.ResponseAddressDto;
 import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.model.Address;
-import org.springframework.stereotype.Component;
 
 @Component
 public class AddressMapper {
@@ -32,14 +33,14 @@ public class AddressMapper {
      * This method takes a CreateAddressDto entity as input and returns a Address object
      * with the corresponding data.
      * </p>
-     * @param createAddressDto the createAddressDto entity to be mapped
+     * @param requestAddressDto the createAddressDto entity to be mapped
      * @return an Address object with the mapped data
      */
-    public Address requestDtoToEntity(CreateAddressDto createAddressDto) {
-        return Address.builder().doorNumber(createAddressDto.getDoorNumber()).
-                street(createAddressDto.getStreet()).city(createAddressDto.getCity()).
-                state(createAddressDto.getState()).zipcode(createAddressDto.getZipcode()).
-                mobileNumber(createAddressDto.getMobileNumber()).build();
+    public Address requestDtoToEntity(RequestAddressDto requestAddressDto) {
+        return Address.builder().doorNumber(requestAddressDto.getDoorNumber()).
+                street(requestAddressDto.getStreet()).city(requestAddressDto.getCity()).
+                state(requestAddressDto.getState()).zipcode(requestAddressDto.getZipcode()).
+                mobileNumber(requestAddressDto.getMobileNumber()).build();
     }
 
     /**
@@ -56,6 +57,7 @@ public class AddressMapper {
         return AddressDto.builder().id(address.getId()).
                 doorNumber(address.getDoorNumber()).street(address.getStreet()).
                 city(address.getCity()).state(address.getState()).
-                zipcode(address.getZipcode()).mobileNumber(address.getMobileNumber()).student(student).build();
+                zipcode(address.getZipcode()).
+                mobileNumber(address.getMobileNumber()).student(student).build();
     }
 }

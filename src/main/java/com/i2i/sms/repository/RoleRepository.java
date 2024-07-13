@@ -1,10 +1,11 @@
 package com.i2i.sms.repository;
 
-import com.i2i.sms.model.Role;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+import com.i2i.sms.model.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {

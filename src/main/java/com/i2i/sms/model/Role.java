@@ -14,9 +14,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 
 /**
  * <p>
@@ -27,6 +26,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "role")
 public class Role {
@@ -44,14 +45,4 @@ public class Role {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private List<Student> students;
-
-    public Role() {
-    }
-
-    public Role(UUID id, String name,
-                List<Student> students) {
-        this.id = id;
-        this.name = name;
-        this.students = students;
-    }
 }

@@ -3,31 +3,34 @@ package com.i2i.sms.controller;
 import java.util.List;
 import java.util.UUID;
 
-import com.i2i.sms.dto.RequestStudentDto;
-import com.i2i.sms.dto.RequestUpdateStudentDto;
-import com.i2i.sms.dto.ResponseStudentDto;
-import com.i2i.sms.dto.StudentDto;
-import com.i2i.sms.utils.DateUtils;
-import com.i2i.sms.utils.StringValidationUtil;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import com.i2i.sms.dto.RequestStudentDto;
+import com.i2i.sms.dto.RequestUpdateStudentDto;
+import com.i2i.sms.dto.ResponseStudentDto;
+import com.i2i.sms.dto.StudentDto;
 import com.i2i.sms.exception.StudentManagementException;
 import com.i2i.sms.service.StudentService;
+import com.i2i.sms.utils.DateUtils;
+import com.i2i.sms.utils.StringValidationUtil;
 
 /**
  * <p>
  * Methods within this class handle user inputs, validate data,
  * and delegate tasks to respective services.
- * It also contains methods for displaying student data.
  * </p>
  */
 @RestController
-@RequestMapping("sms/api/v1/students")
+@RequestMapping("v1/students")
 public class StudentController {
     private final Logger logger = LoggerFactory.getLogger(StudentController.class);
     @Autowired
@@ -37,43 +40,31 @@ public class StudentController {
      * <p>
      * get information from the user as dto object and creates a student.
      * </p>
+     * @param requestStudentDto {@link RequestStudentDto}
+     * @return {@link ResponseStudentDto}
      */
     @PostMapping
-    public ResponseEntity<?> createStudent(
+    public ResponseEntity<?> createStudent(@Valid
             @RequestBody RequestStudentDto requestStudentDto) {
         try {
-            if (!StringValidationUtil.isValidString(requestStudentDto.getName())) {
-                return new ResponseEntity<>("Student name should be in a-z or" +
-                        " A-Z format", HttpStatus.BAD_REQUEST);
-            }
-            if (!DateUtils.isValidDate(requestStudentDto.getDob())) {
-                return new ResponseEntity<>("Could not process the given date" +
-                        " is future date", HttpStatus.BAD_REQUEST);
-            }
-            if (requestStudentDto.getGrade().getStandard() < 1 ||
-                    requestStudentDto.getGrade().getStandard() > 12) {
-                return new ResponseEntity<>("Standard must be between" +
-                        " 1 and 12", HttpStatus.BAD_REQUEST);
-            }
-            if (!StringValidationUtil.isValidString(requestStudentDto.getGrade().getSection())
-                    && requestStudentDto.getGrade().getSection().length() != 1) {
-                return new ResponseEntity<>("Could not process the given section is either" +
-                        " not a string or more than one character", HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(studentService.addStudent(requestStudentDto),
                     HttpStatus.CREATED);
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * update student object with the given information.
+     * <p>
+     * updates student object with the given information.
+     * </p>
+     * @param studentId id of the student to update for.
+     * @param requestUpdateStudentDto {@link RequestUpdateStudentDto}
+     * @return {@link ResponseStudentDto}
      */
     @PutMapping("{id}")
-    public ResponseEntity<?> updateStudent(
-            @PathVariable("id") UUID studentId,
+    public ResponseEntity<?> updateStudent(@PathVariable("id") UUID studentId,
             @RequestBody RequestUpdateStudentDto requestUpdateStudentDto) {
         try {
             if (!StringValidationUtil.isValidString(requestUpdateStudentDto.getName())) {
@@ -88,14 +79,15 @@ public class StudentController {
                     requestUpdateStudentDto), HttpStatus.OK);
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
-     * Retrieves All the student details and displays the student information to the user.
+     * Retrieves All students details.
      * </p>
+     * @return list of studentDto{@link StudentDto}.
      */
     @GetMapping
     public ResponseEntity<?> getAllStudents() {
@@ -108,37 +100,40 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
      * Retrieves the corresponding student details by their id.
      * </p>
+     * @param studentId id of the student to search for.
+     * @return {@link ResponseStudentDto}.
      */
     @GetMapping("{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") UUID studentId) {
         try {
             ResponseStudentDto student = studentService.getStudentById(studentId);
-            if (null != student) {
+            if (!ObjectUtils.isEmpty(student)) {
                 return ResponseEntity.ok(student);
             } else {
                 return new ResponseEntity<>("No data Found", HttpStatus.NOT_FOUND);
             }
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * <p>
      * deletes the corresponding student with their id.
      * </p>
+     * @param studentId id of the student to delete for.
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteStudentById(@PathVariable("id") UUID studentId) {
+    public ResponseEntity<String> deleteStudentById(@PathVariable("id") UUID studentId) {
         try {
             boolean isStudentDelete = studentService.deleteStudentById(studentId);
             if (isStudentDelete) {
@@ -149,7 +144,7 @@ public class StudentController {
             }
         } catch (StudentManagementException e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

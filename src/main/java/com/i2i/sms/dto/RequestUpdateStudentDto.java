@@ -5,14 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 
-
+/**
+ * <p>
+ * This class is responsible for managing the requested student details that contains
+ * student's name, date of birth, requested address{@link RequestAddressDto}.
+ * </p>
+ */
 @Getter
 @Setter
 @Builder
 public class RequestUpdateStudentDto {
     private String name;
     private LocalDate dob;
-    private CreateAddressDto address;
+    private RequestAddressDto address;
 }
